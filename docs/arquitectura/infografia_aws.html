@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arquitectura AWS</title>
+<style>
+  :root { --bg: #f9f9f7; --ink: #0b0b0b; --muted: #52514e; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #0d0d0d; --ink: #f0efec; --muted: #c3c2b7; } }
+  :root[data-theme="dark"] { --bg: #0d0d0d; --ink: #f0efec; --muted: #c3c2b7; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; padding: 24px 16px; }
+  main { max-width: 1400px; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  p { color: var(--muted); margin: 0 0 16px; }
+  .lienzo { overflow-x: auto; border-radius: 14px; }
+  img { display: block; width: 100%; min-width: 900px; height: auto; border-radius: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Arquitectura propuesta en AWS</h1>
+  <p>Flujo completo: ingesta → procesamiento → modelo → app web → agente de IA, con seguridad y operación transversales. Diseño propuesto, no desplegado.</p>
+  <div class="lienzo"><img src="infografia_aws.svg" alt="Infografía de la arquitectura AWS: fuentes externas, ingesta con EventBridge, Lambda y S3; procesamiento en ECS Fargate con Glue y Athena; modelo con reentrenamiento mensual, regresión restringida, backtesting y Monte Carlo; app Streamlit en App Runner; agente Claude vía Bedrock con herramientas; Secrets Manager, IAM, CloudWatch y Budgets."></div>
+</main>
+</body>
+</html>

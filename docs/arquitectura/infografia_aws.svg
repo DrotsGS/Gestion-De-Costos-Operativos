@@ -1,0 +1,224 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1180" width="1400" height="1180" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="flecha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#232F3E"/>
+    </marker>
+    <style>
+      .titulo{font-size:34px;font-weight:700;fill:#232F3E}
+      .sub{font-size:17px;fill:#545B64}
+      .etapa{font-size:15px;font-weight:700;fill:#fff;letter-spacing:1px}
+      .h{font-size:19px;font-weight:700;fill:#232F3E}
+      .svc{font-size:15px;font-weight:700;fill:#232F3E}
+      .t{font-size:13.5px;fill:#37414D}
+      .tc{font-size:12.5px;fill:#545B64}
+      .num{font-size:22px;font-weight:800;fill:#fff}
+      .chip{font-size:12.5px;font-weight:600;fill:#232F3E}
+    </style>
+  </defs>
+
+  <rect width="1400" height="1180" fill="#F7F8FA"/>
+
+  <!-- Encabezado -->
+  <rect x="0" y="0" width="1400" height="118" fill="#232F3E"/>
+  <rect x="0" y="118" width="1400" height="6" fill="#FF9900"/>
+  <text x="48" y="58" class="titulo" fill="#fff" style="fill:#fff">Arquitectura en AWS · Estimación de costos de equipos</text>
+  <text x="48" y="92" class="sub" style="fill:#D5DBDB">Del precio de las materias primas al presupuesto de obra, con un agente de IA que explica los resultados · Diseño propuesto (no desplegado)</text>
+
+  <!-- Fuente externa -->
+  <g>
+    <rect x="48" y="160" width="230" height="300" rx="14" fill="#fff" stroke="#AAB7B8" stroke-dasharray="6 5"/>
+    <text x="70" y="192" class="h">Fuentes externas</text>
+    <text x="70" y="222" class="t">Precios de mercado</text>
+    <text x="70" y="244" class="tc">• X ≈ petróleo Brent</text>
+    <text x="70" y="264" class="tc">• Y ≈ acero</text>
+    <text x="70" y="284" class="tc">• Z ≈ aluminio</text>
+    <text x="70" y="314" class="t">Compras de la empresa</text>
+    <text x="70" y="336" class="tc">• Precio de Equipo 1 y 2</text>
+    <text x="70" y="366" class="t">Contexto de mercado</text>
+    <text x="70" y="388" class="tc">• Noticias del sector</text>
+    <text x="70" y="420" class="tc" font-style="italic">(identificación X/Y/Z:</text>
+    <text x="70" y="438" class="tc" font-style="italic">hipótesis propia)</text>
+  </g>
+
+  <!-- Etapa 1 Ingesta -->
+  <g>
+    <rect x="320" y="160" width="250" height="300" rx="14" fill="#fff" stroke="#E7E9EC"/>
+    <rect x="320" y="160" width="250" height="40" rx="14" fill="#E7157B"/>
+    <rect x="320" y="186" width="250" height="14" fill="#E7157B"/>
+    <circle cx="346" cy="180" r="15" fill="#B0084D"/><text x="340" y="188" class="num" style="font-size:18px">1</text>
+    <text x="370" y="186" class="etapa">INGESTA</text>
+    <text x="340" y="232" class="svc">Amazon EventBridge</text>
+    <text x="340" y="252" class="tc">Programador: 1 vez al mes</text>
+    <text x="340" y="286" class="svc">AWS Lambda</text>
+    <text x="340" y="306" class="tc">Descarga precios y compras</text>
+    <text x="340" y="340" class="svc">Amazon S3 · zona cruda</text>
+    <text x="340" y="360" class="tc">CSV originales, sin tocar</text>
+    <text x="340" y="380" class="tc">(versionado activado)</text>
+    <rect x="340" y="404" width="210" height="38" rx="8" fill="#FDEEF5"/>
+    <text x="352" y="428" class="chip">Los datos originales nunca se editan</text>
+  </g>
+
+  <!-- Etapa 2 Procesamiento -->
+  <g>
+    <rect x="612" y="160" width="250" height="300" rx="14" fill="#fff" stroke="#E7E9EC"/>
+    <rect x="612" y="160" width="250" height="40" rx="14" fill="#8C4FFF"/>
+    <rect x="612" y="186" width="250" height="14" fill="#8C4FFF"/>
+    <circle cx="638" cy="180" r="15" fill="#5A2DB3"/><text x="632" y="188" class="num" style="font-size:18px">2</text>
+    <text x="662" y="186" class="etapa">PROCESAMIENTO</text>
+    <text x="632" y="232" class="svc">ECS Fargate (job)</text>
+    <text x="632" y="252" class="tc">utils.py: unifica formatos,</text>
+    <text x="632" y="270" class="tc">detecta y corrige atípicos</text>
+    <text x="632" y="288" class="tc">auditoria.py: hallazgos</text>
+    <text x="632" y="322" class="svc">Amazon S3 · zona procesada</text>
+    <text x="632" y="342" class="tc">Series mensuales limpias</text>
+    <text x="632" y="376" class="svc">Glue Data Catalog + Athena</text>
+    <text x="632" y="396" class="tc">Consultas SQL ad hoc</text>
+    <rect x="632" y="412" width="210" height="34" rx="8" fill="#F1EAFF"/>
+    <text x="644" y="434" class="chip">Registro de cada corrección</text>
+  </g>
+
+  <!-- Etapa 3 Modelo -->
+  <g>
+    <rect x="904" y="160" width="448" height="300" rx="14" fill="#fff" stroke="#E7E9EC"/>
+    <rect x="904" y="160" width="448" height="40" rx="14" fill="#01A88D"/>
+    <rect x="904" y="186" width="448" height="14" fill="#01A88D"/>
+    <circle cx="930" cy="180" r="15" fill="#067F68"/><text x="924" y="188" class="num" style="font-size:18px">3</text>
+    <text x="954" y="186" class="etapa">MODELO (reentrenamiento mensual)</text>
+    <text x="924" y="232" class="svc">EventBridge → ECS Fargate</text>
+    <text x="924" y="252" class="tc">Corre el pipeline completo tras cada ingesta</text>
+    <!-- sub cajas -->
+    <rect x="924" y="270" width="132" height="122" rx="10" fill="#E6F6F3"/>
+    <text x="936" y="294" class="chip">Fórmula de costo</text>
+    <text x="936" y="316" class="tc">Regresión</text>
+    <text x="936" y="334" class="tc">restringida +</text>
+    <text x="936" y="352" class="tc">cointegración</text>
+    <text x="936" y="376" class="tc" font-weight="700">E1 ≈ 80% Y + 20% X</text>
+    <rect x="1066" y="270" width="132" height="122" rx="10" fill="#E6F6F3"/>
+    <text x="1078" y="294" class="chip">Validación</text>
+    <text x="1078" y="316" class="tc">Backtesting de</text>
+    <text x="1078" y="334" class="tc">4 modelos vs.</text>
+    <text x="1078" y="352" class="tc">caminata aleatoria</text>
+    <text x="1078" y="376" class="tc" font-weight="700">Horizonte: 3 meses</text>
+    <rect x="1208" y="270" width="124" height="122" rx="10" fill="#E6F6F3"/>
+    <text x="1220" y="294" class="chip">Incertidumbre</text>
+    <text x="1220" y="316" class="tc">Monte Carlo</text>
+    <text x="1220" y="334" class="tc">(bootstrap por</text>
+    <text x="1220" y="352" class="tc">bloques)</text>
+    <text x="1220" y="376" class="tc" font-weight="700">P10 · P50 · P90</text>
+    <text x="924" y="420" class="svc">Amazon S3 · zona de resultados</text>
+    <text x="924" y="440" class="tc">Fórmulas, pronósticos, abanicos, métricas (JSON/Parquet) — lo que leen la app y el agente</text>
+  </g>
+
+  <!-- Flechas etapa 1-2-3 -->
+  <line x1="278" y1="310" x2="316" y2="310" stroke="#232F3E" stroke-width="2.5" marker-end="url(#flecha)"/>
+  <line x1="570" y1="310" x2="608" y2="310" stroke="#232F3E" stroke-width="2.5" marker-end="url(#flecha)"/>
+  <line x1="862" y1="310" x2="900" y2="310" stroke="#232F3E" stroke-width="2.5" marker-end="url(#flecha)"/>
+  <!-- bajada a exposición -->
+  <path d="M1128,460 L1128,500 L700,500 L700,532" fill="none" stroke="#232F3E" stroke-width="2.5" marker-end="url(#flecha)"/>
+  <text x="1140" y="492" class="tc">lee resultados</text>
+
+  <!-- Etapa 4 Exposición -->
+  <g>
+    <rect x="320" y="536" width="640" height="310" rx="14" fill="#fff" stroke="#E7E9EC"/>
+    <rect x="320" y="536" width="640" height="40" rx="14" fill="#ED7100"/>
+    <rect x="320" y="562" width="640" height="14" fill="#ED7100"/>
+    <circle cx="346" cy="556" r="15" fill="#B35500"/><text x="340" y="564" class="num" style="font-size:18px">4</text>
+    <text x="370" y="562" class="etapa">EXPOSICIÓN · APP WEB STREAMLIT</text>
+    <text x="340" y="608" class="svc">AWS App Runner</text>
+    <text x="340" y="628" class="tc">Contenedor Streamlit, HTTPS y escalado automático</text>
+    <text x="340" y="648" class="tc">(alternativa: ECS Fargate + Application Load Balancer)</text>
+    <text x="340" y="680" class="svc">Amazon ECR</text>
+    <text x="340" y="700" class="tc">Imagen del contenedor de la app</text>
+    <!-- mock app -->
+    <rect x="640" y="596" width="300" height="230" rx="10" fill="#F2F3F3" stroke="#D5DBDB"/>
+    <rect x="640" y="596" width="88" height="230" rx="10" fill="#E3E6E8"/>
+    <text x="650" y="620" class="tc" font-weight="700">Páginas</text>
+    <text x="650" y="642" class="tc" style="font-size:11px">Resumen</text>
+    <text x="650" y="660" class="tc" style="font-size:11px">Calidad datos</text>
+    <text x="650" y="678" class="tc" style="font-size:11px">Qué mueve</text>
+    <text x="650" y="696" class="tc" style="font-size:11px">Proyecciones</text>
+    <text x="650" y="714" class="tc" style="font-size:11px">Presupuesto</text>
+    <text x="650" y="732" class="tc" style="font-size:11px">Arquitectura</text>
+    <rect x="738" y="612" width="110" height="200" rx="6" fill="#fff"/>
+    <polygon points="748,760 776,735 804,712 838,690 838,800 804,790 776,780 748,770" fill="#FFE2BF"/>
+    <polyline points="748,765 776,760 804,756 838,752" fill="none" stroke="#ED7100" stroke-width="2"/>
+    <text x="748" y="632" class="tc" style="font-size:11px" font-weight="700">Abanico P10–P90</text>
+    <rect x="856" y="612" width="76" height="200" rx="6" fill="#E9F3FF" stroke="#7AA9E0"/>
+    <text x="862" y="632" class="tc" style="font-size:11px" font-weight="700">🤖 Agente</text>
+    <rect x="862" y="644" width="64" height="30" rx="5" fill="#fff"/>
+    <rect x="862" y="682" width="64" height="44" rx="5" fill="#fff"/>
+    <text x="340" y="740" class="t" font-weight="700">Para quién</text>
+    <text x="340" y="760" class="tc">Gerencia de proyecto y compras:</text>
+    <text x="340" y="778" class="tc">presupuesto por fase + reserva</text>
+    <text x="340" y="796" class="tc">(P90 − P50) y verificador de</text>
+    <text x="340" y="814" class="tc">cotizaciones de proveedores</text>
+  </g>
+
+  <!-- Etapa 5 Agente -->
+  <g>
+    <rect x="1002" y="536" width="350" height="310" rx="14" fill="#fff" stroke="#E7E9EC"/>
+    <rect x="1002" y="536" width="350" height="40" rx="14" fill="#3F8624"/>
+    <rect x="1002" y="562" width="350" height="14" fill="#3F8624"/>
+    <circle cx="1028" cy="556" r="15" fill="#2B5E18"/><text x="1022" y="564" class="num" style="font-size:18px">5</text>
+    <text x="1052" y="562" class="etapa">AGENTE DE IA (CLAUDE)</text>
+    <text x="1022" y="608" class="svc">Amazon Bedrock</text>
+    <text x="1022" y="628" class="tc">(o API de Anthropic) · modelo Claude</text>
+    <text x="1022" y="660" class="t" font-weight="700">Herramientas que decide usar:</text>
+    <rect x="1022" y="672" width="310" height="28" rx="6" fill="#EEF6EA"/><text x="1032" y="691" class="chip">🔧 consultar_resultados</text>
+    <rect x="1022" y="706" width="310" height="28" rx="6" fill="#EEF6EA"/><text x="1032" y="725" class="chip">🔧 simular_escenario ("¿y si el acero sube 20%?")</text>
+    <rect x="1022" y="740" width="310" height="28" rx="6" fill="#EEF6EA"/><text x="1032" y="759" class="chip">🔧 evaluar_cotizacion</text>
+    <rect x="1022" y="774" width="310" height="28" rx="6" fill="#EEF6EA"/><text x="1032" y="793" class="chip">🔧 búsqueda web de noticias del mercado</text>
+    <text x="1022" y="828" class="tc">Memoria de la conversación · muestra qué herramienta usó</text>
+  </g>
+  <line x1="960" y1="690" x2="998" y2="690" stroke="#232F3E" stroke-width="2.5" marker-end="url(#flecha)" marker-start="url(#flecha)"/>
+  <!-- web search link to fuentes -->
+  <path d="M1352,788 L1380,788 L1380,140 L163,140 L163,156" fill="none" stroke="#7D8998" stroke-width="1.8" stroke-dasharray="6 5" marker-end="url(#flecha)"/>
+  <text x="1150" y="134" class="tc" font-style="italic">el agente consulta noticias del mercado</text>
+
+  <!-- Usuario -->
+  <g>
+    <rect x="48" y="600" width="230" height="180" rx="14" fill="#fff" stroke="#AAB7B8"/>
+    <circle cx="163" cy="648" r="26" fill="#232F3E"/>
+    <circle cx="163" cy="640" r="9" fill="#fff"/>
+    <path d="M147,664 Q163,648 179,664" fill="#fff"/>
+    <text x="163" y="700" class="h" text-anchor="middle">Usuarios</text>
+    <text x="163" y="724" class="tc" text-anchor="middle">Gerencia, compras,</text>
+    <text x="163" y="742" class="tc" text-anchor="middle">planeación financiera</text>
+    <text x="163" y="762" class="tc" text-anchor="middle">(navegador, HTTPS)</text>
+  </g>
+  <line x1="278" y1="690" x2="316" y2="690" stroke="#232F3E" stroke-width="2.5" marker-end="url(#flecha)"/>
+
+  <!-- Franja transversal -->
+  <g>
+    <rect x="48" y="880" width="1304" height="120" rx="14" fill="#232F3E"/>
+    <text x="72" y="914" class="etapa" style="font-size:16px">SEGURIDAD Y OPERACIÓN (transversal)</text>
+    <rect x="72" y="930" width="300" height="52" rx="8" fill="#37475A"/>
+    <text x="86" y="952" class="chip" style="fill:#FF9900">AWS Secrets Manager</text>
+    <text x="86" y="971" class="tc" style="fill:#D5DBDB">API keys fuera del código</text>
+    <rect x="388" y="930" width="300" height="52" rx="8" fill="#37475A"/>
+    <text x="402" y="952" class="chip" style="fill:#FF9900">AWS IAM</text>
+    <text x="402" y="971" class="tc" style="fill:#D5DBDB">Permisos mínimos por servicio</text>
+    <rect x="704" y="930" width="300" height="52" rx="8" fill="#37475A"/>
+    <text x="718" y="952" class="chip" style="fill:#FF9900">Amazon CloudWatch</text>
+    <text x="718" y="971" class="tc" style="fill:#D5DBDB">Logs, métricas y alarmas del pipeline</text>
+    <rect x="1020" y="930" width="308" height="52" rx="8" fill="#37475A"/>
+    <text x="1034" y="952" class="chip" style="fill:#FF9900">AWS Budgets</text>
+    <text x="1034" y="971" class="tc" style="fill:#D5DBDB">Tope de gasto (nube + uso de Claude)</text>
+  </g>
+
+  <!-- Beneficios -->
+  <g>
+    <rect x="48" y="1030" width="420" height="110" rx="14" fill="#fff" stroke="#FF9900" stroke-width="2"/>
+    <text x="72" y="1068" class="h">♻️ Reproducible</text>
+    <text x="72" y="1094" class="tc">El mismo código corre en local y en la nube;</text>
+    <text x="72" y="1112" class="tc">cada corrección de datos queda registrada.</text>
+    <rect x="490" y="1030" width="420" height="110" rx="14" fill="#fff" stroke="#FF9900" stroke-width="2"/>
+    <text x="514" y="1068" class="h">🗓️ Se actualiza solo cada mes</text>
+    <text x="514" y="1094" class="tc">Ingesta → limpieza → reentrenamiento sin</text>
+    <text x="514" y="1112" class="tc">intervención; alarmas si algo falla.</text>
+    <rect x="932" y="1030" width="420" height="110" rx="14" fill="#fff" stroke="#FF9900" stroke-width="2"/>
+    <text x="956" y="1068" class="h">☁️ Sin servidores que administrar</text>
+    <text x="956" y="1094" class="tc">Lambda, Fargate y App Runner escalan solos;</text>
+    <text x="956" y="1112" class="tc">se paga solo por lo que se usa.</text>
+  </g>
+</svg>
