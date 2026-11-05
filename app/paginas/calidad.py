@@ -2,9 +2,9 @@
 import pandas as pd
 import streamlit as st
 
-from app.estilo import ESTADO, aplicar_css, fmt_es, tema_actual
+from app.estilo import ESTADO, fmt_es, tema_actual
 from app.graficos import fig_serie_con_atipico
-from app.layout import con_agente
+from app.layout import con_agente, encabezado
 from src.contenido import TEXTO_OCULTO_RESUMEN, tabla_texto_oculto
 from src.pipeline import Resultados
 
@@ -52,9 +52,7 @@ def _tarjeta(h, res: Resultados) -> None:
 
 
 def render(res: Resultados) -> None:
-    aplicar_css()
-    st.title("🔍 Datos y trampas")
-    st.markdown("Hallazgos de la auditoría, de mayor a menor severidad.")
+    encabezado("calidad", "Hallazgos de la auditoría, de mayor a menor severidad.")
     for h in sorted(res.hallazgos, key=lambda x: ORDEN[x.severidad]):
         _tarjeta(h, res)
 

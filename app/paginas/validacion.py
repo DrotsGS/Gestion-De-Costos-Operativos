@@ -1,9 +1,9 @@
 """Validación de modelos (sección análisis)."""
 import streamlit as st
 
-from app.estilo import aplicar_css, fmt_es, fmt_pct, tema_actual, tokens
+from app.estilo import fmt_es, fmt_pct, tema_actual, tokens
 from app.graficos import fig_x_oos
-from app.layout import con_agente
+from app.layout import con_agente, encabezado
 from src.config import COBERTURA_NOMINAL, HORIZONTE_MAX_MAPE, HORIZONTE_MIN_COB
 from src.pipeline import Resultados
 
@@ -47,14 +47,12 @@ def _backtest(res: Resultados, eq: str) -> None:
 
 def _cobertura_texto() -> None:
     st.caption("La primera versión simulaba con distribución normal y la cobertura quedaba muy por debajo de la "
-               "nominal; se eligió bootstrap por bloques. Detalle en docs/DECISIONES.md.")
+               "nominal; se eligió bootstrap por bloques.")
 
 
 def render(res: Resultados) -> None:
-    aplicar_css()
     h = res.horizonte
-    st.title("✅ Validación de modelos")
-    st.subheader(f"Por qué confiamos en el pronóstico solo {h} meses")
+    encabezado("validacion", f"Por qué confiamos en el pronóstico solo {h} meses.")
     eq = st.segmented_control("Equipo", list(NOMBRE), format_func=NOMBRE.get, default="Equipo1",
                               key="val_equipo") or "Equipo1"
     _backtest(res, eq)

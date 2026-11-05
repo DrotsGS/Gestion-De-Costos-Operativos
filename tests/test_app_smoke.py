@@ -222,3 +222,73 @@ def test_metodologia_local_sin_barra_suelta():
     from app.paginas.metodologia import LOCAL
     assert LOCAL.startswith("```bash") and not LOCAL.startswith("\\")
     assert "\n\\n" not in LOCAL
+
+
+def _estilos(at) -> list[str]:
+    return [h.proto.body for h in at.get("html") if "<style" in h.proto.body]
+
+
+def test_panel_agente_sin_tablas(rapido):
+    at = AppTest.from_file(MAIN, default_timeout=120).run()
+    exp = [e for e in at.expander if e.label == "¿Qué hace este agente?"]
+    assert len(exp) == 1
+    txt = "\n".join(m.value for m in exp[0].markdown)
+    assert "|---" not in txt and "|" not in txt
+    for rasgo in ("Autonomía", "Herramientas", "Memoria", "Acción"):
+        assert rasgo in txt
+
+
+def test_css_se_inyecta_una_vez(rapido):
+    at = AppTest.from_file(MAIN, default_timeout=120).run()
+    assert len(_estilos(at)) == 1
+    at.switch_page("paginas/validacion.py").run()
+    assert not at.exception and len(_estilos(at)) == 1
+    assert "stChatMessage" in _estilos(at)[0]  # contenido del chat no se desborda
+
+
+def test_encabezado_con_seccion(rapido):
+    at = AppTest.from_file(MAIN, default_timeout=120).run()
+    cab = [m.value for m in at.markdown if "eg-eyebrow" in m.value]
+    assert len(cab) == 1 and "Para el cliente" in cab[0] and "Resumen ejecutivo" in cab[0]
+    at.switch_page("paginas/calidad.py").run()
+    cab = [m.value for m in at.markdown if "eg-eyebrow" in m.value]
+    assert len(cab) == 1 and "Detrás del análisis" in cab[0]
+
+
+def test_encabezado_escapa_html():
+    from app.layout import html_encabezado
+    h = html_encabezado("resumen", "a < b")
+    assert "eg-eyebrow" in h and "Para el cliente" in h and "a &lt; b" in h and "🏢" not in h
+
+
+def test_alto_chat_segun_mensajes():
+    from app.layout import ALTO_CHAT, ALTO_CHAT_VACIO, alto_chat
+    assert alto_chat(0) == ALTO_CHAT_VACIO < ALTO_CHAT
+    assert alto_chat(1) == alto_chat(6) == ALTO_CHAT
+
+
+def _alto_historial(at) -> int:
+    """Alto en px del contenedor con altura fija dentro del panel del agente."""
+    panel = next(b for b in at.main if getattr(b, "type", "") == "flex_container")
+    altos = [b.proto.height_config.pixel_height for b in panel
+             if getattr(b, "type", "") == "flex_container" and b.proto.height_config.pixel_height]
+    assert len(altos) == 1
+    return altos[0]
+
+
+def test_panel_alto_chico_vacio_y_completo_con_mensajes(monkeypatch):
+    from app import layout
+
+    def app():
+        from app import layout
+        layout.elegir_proveedor = lambda: ("claude", "k")
+        layout.panel_agente("resumen", None)
+
+    at = AppTest.from_function(app, default_timeout=60)
+    at.run()
+    assert not at.exception
+    assert _alto_historial(at) == layout.ALTO_CHAT_VACIO
+    at.session_state[layout.CLAVE_CHAT] = [{"role": "user", "content": "hola"}]
+    at.run()
+    assert not at.exception
+    assert _alto_historial(at) == layout.ALTO_CHAT

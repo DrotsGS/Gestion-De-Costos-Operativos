@@ -2,8 +2,8 @@
 import pandas as pd
 import streamlit as st
 
-from app.estilo import aplicar_css, fmt_es, tema_actual, tokens
-from app.layout import con_agente
+from app.estilo import fmt_es, tema_actual, tokens
+from app.layout import con_agente, encabezado
 from src.negocio import CANTIDADES_EJEMPLO, budget, evaluate_quote, validar_cantidades
 from src.pipeline import Resultados
 
@@ -39,8 +39,7 @@ def _veredicto(fans: dict, tema: str) -> None:
 
 
 def render(res: Resultados) -> None:
-    aplicar_css()
-    st.title("💰 Presupuesto y proveedores")
+    encabezado("presupuesto", "Presupuesto con reserva para cantidades de ejemplo y verificador de cotizaciones.")
     fans = res.fans["base"]
     meses = {f"{d:%Y-%m}" for d in fans["Equipo1"].index}
     st.markdown("Las cantidades son **de ejemplo** (el caso no las entrega): edítalas, agrega o quita filas. "
@@ -57,7 +56,7 @@ def render(res: Resultados) -> None:
         except ValueError as e:  # red de seguridad
             st.error(str(e))
         else:
-            m1, m2, m3 = st.columns(3)
+            m1, m2, m3 = (c.container(border=True, key=f"eg_kpi_pres_{i}") for i, c in enumerate(st.columns(3)))
             m1.metric("Presupuesto esperado", fmt_es(b["p50"].sum(), 0), help="Σ cantidad × costo esperado.")
             m2.metric("Reserva", fmt_es(b["reserva"].sum(), 0),
                       help="Colchón para un escenario adverso: Σ cantidad × (P90 − P50).")

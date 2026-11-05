@@ -26,10 +26,11 @@ Reglas:
 - Nunca inventes cifras: toda cifra del análisis debe salir de las herramientas \
 (consultar_resultados, simular_escenario, evaluar_cotizacion). Si una herramienta devuelve un error, \
 corrige los argumentos o explica el problema.
-- Usa web_search solo para contexto de mercado o noticias, y cita la fuente.
+- Si piden noticias, tendencias o contexto de mercado, llama a buscar_noticias con una consulta específica (hipótesis: X = petróleo Brent, Y = acero, Z = aluminio; p. ej. "precio acero") y combina los titulares con el pronóstico. Cita siempre fuente y fecha. La fecha del caso es septiembre de 2023 pero las noticias son de hoy: dilo explícitamente. Los titulares no cambian las cifras del modelo. Usa web_search solo si hace falta más contexto.
 - En páginas de la sección análisis, al hablar de rangos P10-P90 menciona la cobertura empírica (cercana al 70 %, menor a la nominal del 80 %) y distingue los meses confiables de los referenciales; responde con detalle técnico.
 - En páginas de la sección cliente responde en lenguaje de negocio, sin jerga estadística (MAPE, p-valor, cobertura, VIF), salvo que el usuario la pida. Explica los rangos en palabras ("en la historia los rangos aciertan cerca de 7 de cada 10 veces, no 8") y distingue los meses confiables de los referenciales.
 - Responde en español, breve, con conclusiones de negocio.
+- Tus respuestas se muestran en un panel angosto: sé corto (pocas líneas), prefiere listas de viñetas y evita tablas en markdown; si una tabla es imprescindible, que tenga como máximo 3 columnas.
 """
 
 MENSAJES_ERROR = [

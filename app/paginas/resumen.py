@@ -1,8 +1,8 @@
 """Resumen ejecutivo (sección cliente, sin jerga estadística)."""
 import streamlit as st
 
-from app.estilo import aplicar_css, fmt_es, fmt_pct
-from app.layout import con_agente
+from app.estilo import fmt_es, fmt_pct
+from app.layout import con_agente, encabezado
 from src.config import COBERTURA_NOMINAL, ETIQUETAS
 from src.negocio import CANTIDADES_EJEMPLO, budget
 from src.pipeline import Resultados
@@ -33,8 +33,7 @@ def _frecuencia(h: int) -> str:
 
 
 def render(res: Resultados) -> None:
-    aplicar_css()
-    st.title("📋 Resumen ejecutivo")
+    encabezado("resumen", "Costo esperado de cada equipo, reserva recomendada y hasta cuándo confiar en las cifras.")
     h = res.horizonte
     base = res.fans["base"]
     pal = {e: res.participacion[e].idxmax() for e in res.participacion}  # mayor parte del costo, no mayor peso
@@ -43,14 +42,14 @@ def render(res: Resultados) -> None:
     cols = st.columns(len(base) + 1)
     for col, (eq, fan) in zip(cols, base.items()):
         f1 = fan.iloc[0]
-        with col, st.container(border=True):
+        with col, st.container(border=True, key=f"eg_kpi_{eq}"):
             st.subheader(NOMBRE[eq])
             st.metric(f"Costo esperado, {_mes(fan.index[0])}", f"≈ {fmt_es(f1['p50'], 0)}")
             st.caption(f"Entre {fmt_es(f1['p10'], 0)} y {fmt_es(f1['p90'], 0)} en {escenarios} de cada 10 "
                        f"escenarios simulados. En la historia, a {h} meses, el rango contuvo el precio real "
                        f"cerca de {_aciertos(res, eq, h)} de cada 10 veces.")
             st.metric(f"Costo esperado, {_mes(fan.index[h - 1])}", f"≈ {fmt_es(fan.iloc[h - 1]['p50'], 0)}")
-    with cols[-1], st.container(border=True):
+    with cols[-1], st.container(border=True, key="eg_kpi_reserva"):
         st.subheader("Reserva")
         st.metric("Reserva recomendada", fmt_pct(_reserva_pct(res), 0),
                   help="Sobre el presupuesto esperado de ejemplo (cantidades editables en Presupuesto y proveedores).")

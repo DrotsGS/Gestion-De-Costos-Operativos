@@ -80,6 +80,14 @@ NOTA_HIPOTESIS = (
     "busque noticias del mercado correcto."
 )
 
+# Rasgos del agente: (aspecto, IA convencional, agente en el panel)
+RASGOS_AGENTE = [
+    ("Autonomía", "Ejecuta el cálculo que se le pide", "Decide los pasos y cuándo parar"),
+    ("Herramientas", "Ninguna: es la herramienta", "Llama al modelo, al verificador de cotizaciones y a las noticias (Google News)"),
+    ("Memoria", "Sin estado entre ejecuciones", "Conserva el hilo de la conversación entre páginas"),
+    ("Acción", "Devuelve números", "Simula escenarios, evalúa cotizaciones y busca noticias"),
+]
+
 IA_VS_AGENTE = """\
 **IA convencional.** Es un modelo que predice, clasifica o genera a partir de datos. Aquí es la \
 regresión de pesos más la simulación Monte Carlo: recibe precios y devuelve un pronóstico con rangos. \
@@ -87,18 +95,20 @@ No decide qué hacer ni actúa por su cuenta.
 
 **Agente de IA.** Percibe el contexto, decide, usa herramientas, tiene memoria y actúa hacia un \
 objetivo. Aquí es el agente Claude del panel lateral: elige qué herramienta llamar \
-(`consultar_resultados`, `simular_escenario`, `evaluar_cotizacion` o la búsqueda web) según la \
+(`consultar_resultados`, `simular_escenario`, `evaluar_cotizacion` o `buscar_noticias`, titulares de Google News) según la \
 pregunta del usuario.
 
 | Aspecto | IA convencional (el modelo) | Agente (Claude en el panel) |
 |---|---|---|
-| Autonomía | Ejecuta el cálculo que se le pide | Decide los pasos y cuándo parar |
-| Uso de herramientas | Ninguno: es la herramienta | Llama al modelo, al verificador de cotizaciones y a la web |
-| Memoria | Sin estado entre ejecuciones | Conserva el hilo de la conversación |
-| Capacidad de acción | Devuelve números | Simula escenarios, evalúa cotizaciones y busca noticias |
+""" + "\n".join(f"| {a} | {m} | {g} |" for a, m, g in RASGOS_AGENTE) + """
 
 El agente no reemplaza al modelo: lo usa como herramienta y no inventa cifras.
 """
+
+# Versión compacta para el panel lateral (sin tablas: la columna es angosta)
+AGENTE_PANEL_INTRO = ("El modelo calcula el pronóstico; el agente decide qué preguntarle, usa sus "
+                      "herramientas y no inventa cifras.")
+
 
 SUPUESTOS = [
     "El caso está fechado en septiembre de 2023 (fin de los datos).",

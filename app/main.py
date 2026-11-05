@@ -8,7 +8,10 @@ import streamlit as st  # noqa: E402
 
 st.set_page_config(page_title="Costos de equipos", page_icon="📋", layout="wide")
 
+from app.estilo import aplicar_css  # noqa: E402
 from app.layout import SECCIONES  # noqa: E402
+
+aplicar_css()  # una sola vez por ejecución, para todas las páginas
 
 pagina = st.navigation({
     seccion: [st.Page(archivo, title=titulo, icon=icono, default=(pid == "resumen"))

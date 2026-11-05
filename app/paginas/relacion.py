@@ -2,9 +2,9 @@
 import pandas as pd
 import streamlit as st
 
-from app.estilo import aplicar_css, fmt_es, fmt_pct, tema_actual
+from app.estilo import fmt_es, fmt_pct, tema_actual
 from app.graficos import fig_pesos, fig_pesos_moviles
-from app.layout import con_agente
+from app.layout import con_agente, encabezado
 from src.config import ETIQUETAS, MATERIAS
 from src.contenido import HIPOTESIS_MATERIAS, NOTA_HIPOTESIS, NOTA_PESOS_VS_COSTO, formula_texto
 from src.pipeline import Resultados
@@ -39,8 +39,7 @@ def _ols(res: Resultados, eq: str) -> None:
 
 
 def render(res: Resultados) -> None:
-    aplicar_css()
-    st.title("🔗 Qué mueve el precio")
+    encabezado("relacion", "Cuánto del costo de cada equipo explica cada materia prima.")
     eq = st.segmented_control("Equipo", list(NOMBRE), format_func=NOMBRE.get, default="Equipo1",
                               key="rel_equipo") or "Equipo1"
     tema = tema_actual()
@@ -77,8 +76,9 @@ def render(res: Resultados) -> None:
     conclusion = ("la combinación de materias primas y el costo se mueven juntos a largo plazo "
                   "(cointegración), por lo que la relación no es espuria") if p < 0.05 else (
         "no hay evidencia de relación estable a largo plazo: la fórmula podría ser espuria")
-    st.metric("p-valor de cointegración (Engle-Granger)", f"{p:.2e}".replace(".", ","))
-    st.caption(f"Con p {'<' if p < 0.05 else '≥'} 0,05, {conclusion}.")
+    with st.container(border=True, key="eg_kpi_coint"):
+        st.metric("p-valor de cointegración (Engle-Granger)", f"{p:.2e}".replace(".", ","))
+        st.caption(f"Con p {'<' if p < 0.05 else '≥'} 0,05, {conclusion}.")
 
     roll = res.rolling[eq]
     ini, fin = roll.iloc[0], roll.iloc[-1]

@@ -1,8 +1,7 @@
 """Metodología."""
 import streamlit as st
 
-from app.estilo import aplicar_css
-from app.layout import con_agente
+from app.layout import con_agente, encabezado
 from src.contenido import IA_VS_AGENTE, SUPUESTOS
 from src.pipeline import Resultados
 
@@ -28,8 +27,7 @@ La app funciona sin clave: el agente muestra conversaciones de ejemplo. Para act
 
 
 def render(res: Resultados) -> None:
-    aplicar_css()
-    st.title("🏗️ Metodología")
+    encabezado("metodologia", "Cómo se construyó la solución, supuestos y cómo correrla.")
 
     st.subheader("Flujo de la solución")
     st.markdown("\n".join(f"{i}. **{t}** — {m}: {d}" for i, (t, m, d) in enumerate(FLUJO, 1)))

@@ -1,0 +1,3 @@
+[client]
+# oculta el botón Deploy y las opciones de desarrollo; el menú conserva el cambio de tema
+toolbarMode = "viewer"

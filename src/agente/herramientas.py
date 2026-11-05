@@ -4,6 +4,7 @@ import pandas as pd
 from src.config import COBERTURA_NOMINAL, EQUIPOS, MATERIAS
 from src.contenido import formula_texto
 from src.negocio import evaluate_quote
+from src.noticias import buscar_noticias
 from src.pipeline import Resultados
 from src.pronostico import apply_shock, equipment_fan
 
@@ -66,6 +67,24 @@ TOOLS: list[dict] = [
                 "precio": {"type": "number", "description": "Precio cotizado."},
             },
             "required": ["equipo", "mes", "precio"],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "buscar_noticias",
+        "description": (
+            "Busca titulares recientes de noticias (Google News) para dar contexto de mercado sobre petróleo "
+            "(Brent), acero o aluminio. Devuelve titulares con fecha y fuente; cita siempre fuente y fecha. "
+            "Los titulares no cambian las cifras del modelo. max_items entre 1 y 8."
+        ),
+        "strict": True,
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "consulta": {"type": "string", "description": "Consulta específica, p. ej. \"precio acero\"."},
+                "max_items": {"type": "integer", "description": "Titulares a devolver (1 a 8); por defecto 5."},
+            },
+            "required": ["consulta"],
             "additionalProperties": False,
         },
     },
@@ -164,7 +183,11 @@ def _cotizacion(args: dict, res: Resultados) -> dict:
             "pct_vs_p50": _r(v.pct_vs_p50 * 100, 1), "sobre_p90": bool(v.sobre_p90)}
 
 
-_EJECUTORES = {"consultar_resultados": _consultar, "simular_escenario": _simular, "evaluar_cotizacion": _cotizacion}
+def _noticias(args: dict, res: Resultados) -> dict:
+    return buscar_noticias(args.get("consulta"), args.get("max_items") or 5)
+
+
+_EJECUTORES = {"buscar_noticias": _noticias, "consultar_resultados": _consultar, "simular_escenario": _simular, "evaluar_cotizacion": _cotizacion}
 
 
 def ejecutar(nombre: str, args: dict, res: Resultados) -> dict:

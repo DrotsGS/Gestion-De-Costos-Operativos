@@ -79,20 +79,22 @@ def test_usa_herramienta_y_responde(res):
     assert "Equipo1" in fr["response"]
 
 
-def test_buscar_noticias_llamada_separada(res):
-    web = types.GroundingChunkWeb(uri="https://x.com/a", title="Acero hoy")
-    grounding = types.GroundingMetadata(grounding_chunks=[types.GroundingChunk(web=web)])
+def test_buscar_noticias_rss(res, monkeypatch):
+    vistas = []
+
+    def falso(consulta, max_items=5):
+        vistas.append((consulta, max_items))
+        return {"consulta": consulta, "noticias": [{"titulo": "Acero sube", "fuente": "Reuters",
+                                                    "fecha": "2023-01-04", "enlace": "http://a"}],
+                "fuente": "Google News (RSS)"}
+    monkeypatch.setattr("src.agente.herramientas.buscar_noticias", falso)
     client = FakeGeminiClient([resp(llamada("buscar_noticias", {"consulta": "precio del acero"})),
-                               resp(texto("El acero sube."), grounding=grounding),
-                               resp(texto("Según Acero hoy, sube."))])
+                               resp(texto("Según Reuters (2023-01-04), sube."))])
     r = responder_gemini([{"role": "user", "content": "noticias"}], "resumen", res, client)
-    assert r.herramientas_usadas == ["buscar_noticias"] and not r.error
-    busqueda = client.llamadas[1]
-    assert busqueda["contents"] == "precio del acero"
-    herr = busqueda["config"].tools[0]
-    assert herr.google_search is not None and not herr.function_declarations
-    fr = client.llamadas[2]["contents"][-1]["parts"][0]["function_response"]["response"]
-    assert fr["resumen"] == "El acero sube." and "https://x.com/a" in fr["fuentes"][0]
+    assert r.herramientas_usadas == ["buscar_noticias"] and not r.error and vistas == [("precio del acero", 5)]
+    fr = client.llamadas[1]["contents"][-1]["parts"][0]["function_response"]["response"]
+    assert fr["noticias"][0]["titulo"] == "Acero sube" and fr["fuente"] == "Google News (RSS)"
+    assert len(client.llamadas) == 2  # sin llamada aparte de búsqueda
 
 
 def err(codigo, estado):
@@ -138,41 +140,24 @@ def test_sin_respaldo_si_todos_fallan(res):
     assert len(client.llamadas) == 1 + len(MODELOS_GEMINI_RESPALDO)
 
 
-def test_error_de_busqueda_el_agente_responde(res):
-    client = FakeGeminiClient([resp(llamada("buscar_noticias", {"consulta": "acero"})), resp(texto("Sin noticias."))],
-                              falla_modelo={})
-    original = client._gen
-
-    def gen(*, model, contents, config=None):
-        if isinstance(contents, str):  # la llamada de búsqueda
-            raise err(429, "RESOURCE_EXHAUSTED")
-        return original(model=model, contents=contents, config=config)
-    client.models = type("M", (), {"generate_content": staticmethod(gen)})()
-    r = responder_gemini([{"role": "user", "content": "noticias"}], "p", res, client)
-    assert not r.error and r.texto == "Sin noticias." and r.herramientas_usadas == ["buscar_noticias"]
-    fr = client.llamadas[-1]["contents"][-1]["parts"][0]["function_response"]["response"]
-    assert fr["error"] == mod.ERR_SIN_BUSQUEDA
-
-
-def test_tope_de_busquedas(res):
-    web = types.GroundingChunkWeb(uri="https://x.com/a", title="T")
-    g = types.GroundingMetadata(grounding_chunks=[types.GroundingChunk(web=web)])
-    pasos = []
-    for _ in range(3):
-        pasos += [resp(llamada("buscar_noticias", {"consulta": "acero"})), resp(texto("res"), grounding=g)]
-    # cada vuelta: modelo pide buscar -> búsqueda; la 3.ª búsqueda no llega a hacerse
-    cola = [pasos[0], pasos[1], pasos[2], pasos[3], pasos[4], resp(texto("Listo."))]
-    client = FakeGeminiClient(cola)
+def test_tope_de_busquedas(res, monkeypatch):
+    llamadas = []
+    monkeypatch.setattr("src.agente.herramientas.buscar_noticias",
+                        lambda c, m=5: llamadas.append(c) or {"consulta": c, "noticias": [], "fuente": "x"})
+    pasos = [resp(llamada("buscar_noticias", {"consulta": "acero"}))] * 3 + [resp(texto("Listo."))]
+    client = FakeGeminiClient(pasos)
     r = responder_gemini([{"role": "user", "content": "noticias"}], "p", res, client)
     assert not r.error and r.texto == "Listo." and r.herramientas_usadas == ["buscar_noticias"] * 3
-    busquedas = [c for c in client.llamadas if isinstance(c["contents"], str)]
-    assert len(busquedas) == mod.MAX_BUSQUEDAS
+    assert len(llamadas) == mod.MAX_BUSQUEDAS
     fr = client.llamadas[-1]["contents"][-1]["parts"][0]["function_response"]["response"]
     assert fr["error"] == mod.ERR_TOPE_BUSQUEDA
 
 
-def test_buscar_noticias_sin_consulta():
-    assert "error" in mod._buscar_noticias("", FakeGeminiClient())
+def test_noticias_con_error_llega_al_modelo(res):
+    client = FakeGeminiClient([resp(llamada("buscar_noticias", {"consulta": ""})), resp(texto("Sin noticias."))])
+    r = responder_gemini([{"role": "user", "content": "noticias"}], "p", res, client)
+    assert not r.error
+    assert "error" in client.llamadas[1]["contents"][-1]["parts"][0]["function_response"]["response"]
 
 
 def test_error_429_cuota_y_rollback(res):

@@ -1,6 +1,6 @@
 # Informe: estimación y proyección del costo de dos equipos de construcción
 
-**Prueba técnica de consultoría · Entrega: 2026-11-04**
+**Prueba técnica de consultoría**
 Repositorio con código, app y documentación. Los números de este informe salen del código (`src/pipeline.py`, `build_results()` con la configuración de producción) y son los mismos que muestra la app.
 
 ---
@@ -19,13 +19,13 @@ Además, el caso pide presentar los resultados en un **agente de IA** que combin
 
 Datos recibidos (`Datos/`): un histórico diario de precios de X, Y, Z y de los dos equipos (2010-01-04 a 2023-08-31, 3.530 días hábiles) y tres archivos sueltos con historias más largas de cada materia prima.
 
-**Entregables y dónde están:** app Streamlit (`app/`), lógica y pruebas (`src/`, `tests/`), este informe, la bitácora de decisiones (`docs/DECISIONES.md`) y la arquitectura (`docs/arquitectura.md`). El `README.md` explica cómo correr todo.
+**Entregables y dónde están:** app Streamlit (`app/`), lógica y pruebas (`src/`, `tests/`), este informe y la arquitectura (`docs/arquitectura.md`). El `README.md` explica cómo correr todo.
 
 ## Supuestos
 
 | # | Supuesto | Por qué | Impacto si no se cumple |
 |---|---|---|---|
-| 1 | **"Hoy" es septiembre de 2023**, justo al terminar los datos. | Los equipos solo tienen datos hasta 2023-08; proyectar desde 2026 sin datos intermedios no sería verificable. | El pronóstico habría que rehacerlo con datos actuales (el código lo permite sin cambios). |
+| 1 | **"Hoy" es septiembre de 2023**, justo al terminar los datos. | Los equipos solo tienen datos hasta 2023-08; proyectar desde una fecha posterior sin datos intermedios no sería verificable. | El pronóstico habría que rehacerlo con datos actuales (el código lo permite sin cambios). |
 | 2 | Se trabaja con **promedios mensuales**. | El presupuesto es mensual y Y casi no cambia de un día a otro. | Una compra puntual tiene ≈ 1,8 % de ruido adicional (se advierte en el verificador). |
 | 3 | La **fórmula de cada equipo es estable**. | Los pesos móviles de 36 meses casi no cambian entre 2010 y 2023. | Si cambia la "receta" del equipo, hay que reestimar. |
 | 4 | Las **cantidades del presupuesto son de ejemplo**. | El caso no entrega cantidades ni fases. | El total es ilustrativo; las cantidades se editan en la app. |
@@ -119,7 +119,7 @@ Primero se probó con shocks normales (gaussianos): el rango P10-P90 cubría ent
 | Equipo 1 | 71 % | 72 % | 74 % | 69 % | 67 % |
 | Equipo 2 | 71 % | 69 % | 72 % | 68 % | 62 % |
 
-**Lectura honesta:** el rango es algo estrecho. En vez de 2 de cada 10 meses, el costo real cae fuera del rango unos 3 de cada 10. No se ensanchó el rango de forma artificial; se muestra el número real en la app y el agente lo menciona. La comparación completa de configuraciones está en `docs/DECISIONES.md`.
+**Lectura honesta:** el rango es algo estrecho. En vez de 2 de cada 10 meses, el costo real cae fuera del rango unos 3 de cada 10. No se ensanchó el rango de forma artificial; se muestra el número real en la app y el agente lo menciona.
 
 **Validación con datos reales posteriores:** X tiene datos hasta 2024-04. Simulando X desde 2023-08, los **7 meses reales de septiembre 2023 a marzo 2024 cayeron dentro del P10-P90** (septiembre, en el borde superior: 92,59 vs P90 de 92,64). Es una muestra pequeña y de una sola serie: confirma que el rango es razonable, no que sea perfecto.
 
@@ -183,7 +183,7 @@ La reserva crece con el plazo: es el 12 % del P50 en la fase 1 y el 30 % en la f
 - **Reestimar los pesos en cada origen del backtest** para eliminar el look-ahead leve.
 - **Errores estándar robustos (HAC)** en los p-valores de la regresión, por la autocorrelación de los residuos.
 - **Modelo conjunto VAR/VECM** como alternativa, si se quiere aprovechar la cointegración entre materias primas.
-- **Validar con datos reales 2023-2026** (página "Pronóstico vs realidad", planificada como opcional y no construida).
+- **Validar con datos reales posteriores a 2023** (página "Pronóstico vs realidad", planificada como opcional y no construida).
 
 **Operación**
 
@@ -236,4 +236,4 @@ El modelo **no depende** de esta identificación. Se usa como contexto para el n
 
 ### Comentario final
 
-El resultado más útil para la constructora no es un número sino una forma de trabajar: **presupuestar el Equipo 1 mirando Y (probable acero) y el Equipo 2 mirando Z (probable aluminio)**, comprometer cifras solo a 3 meses, reservar contingencia por encima del P50 y actualizar el pronóstico cada trimestre (el horizonte confiable es de 3 meses; el pipeline de datos puede refrescarse cada mes). Las decisiones y descartes del proceso están en `docs/DECISIONES.md`.
+El resultado más útil para la constructora no es un número sino una forma de trabajar: **presupuestar el Equipo 1 mirando Y (probable acero) y el Equipo 2 mirando Z (probable aluminio)**, comprometer cifras solo a 3 meses, reservar contingencia por encima del P50 y actualizar el pronóstico cada trimestre (el horizonte confiable es de 3 meses; el pipeline de datos puede refrescarse cada mes).

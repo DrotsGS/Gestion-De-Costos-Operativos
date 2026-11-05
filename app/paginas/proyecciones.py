@@ -2,9 +2,9 @@
 import pandas as pd
 import streamlit as st
 
-from app.estilo import aplicar_css, fmt_es, tema_actual, tokens
+from app.estilo import fmt_es, tema_actual, tokens
 from app.graficos import fig_abanico
-from app.layout import con_agente
+from app.layout import con_agente, encabezado
 from src.config import COBERTURA_NOMINAL
 from src.pipeline import Resultados
 from src.pronostico import ESCENARIOS
@@ -23,8 +23,7 @@ def _explica(esc: str) -> str:
 
 
 def render(res: Resultados) -> None:
-    aplicar_css()
-    st.title("📈 Proyección de costos")
+    encabezado("proyecciones", "Rango de costos simulado por equipo y escenario, mes a mes.")
     c1, c2 = st.columns(2)
     eq = c1.segmented_control("Equipo", list(NOMBRE), format_func=NOMBRE.get, default="Equipo1",
                               key="proy_equipo") or "Equipo1"

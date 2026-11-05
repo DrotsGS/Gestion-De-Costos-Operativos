@@ -6,16 +6,11 @@ from src.agente.herramientas import TOOLS, ejecutar
 from src.config import MODELO_GEMINI, MODELOS_GEMINI_RESPALDO
 from src.pipeline import Resultados
 
-# Gemini no usa web_search de Anthropic: la búsqueda es la herramienta propia buscar_noticias
-SYSTEM_GEMINI = SYSTEM.replace("web_search", "buscar_noticias")
+# Gemini no tiene web_search de Anthropic: usa solo buscar_noticias (RSS)
+SYSTEM_GEMINI = SYSTEM.replace(" Usa web_search solo si hace falta más contexto.", "")
 
 MAX_BUSQUEDAS = 2  # búsquedas de noticias por respuesta
-ERR_SIN_BUSQUEDA = ("La búsqueda de noticias no está disponible (plan gratuito sin búsqueda en Google). "
-                    "Responde con los resultados del modelo y avisa que no hay noticias.")
 ERR_TOPE_BUSQUEDA = "Ya se hicieron las búsquedas permitidas. Responde con lo que ya tienes."
-
-DESC_NOTICIAS = ("Busca en la web contexto de mercado o noticias recientes (p. ej. precio del petróleo, acero o "
-                 "aluminio) y devuelve un resumen con sus fuentes.")
 
 
 def _sin_adicionales(schema):
@@ -26,15 +21,10 @@ def _sin_adicionales(schema):
 
 
 def _declaraciones() -> list[types.FunctionDeclaration]:
-    """Herramientas custom de `herramientas.TOOLS` (sin la de Anthropic) más buscar_noticias."""
+    """Herramientas custom de `herramientas.TOOLS` (sin la de servidor de Anthropic)."""
     decl = [types.FunctionDeclaration(name=t["name"], description=t["description"],
                                       parameters_json_schema=_sin_adicionales(t["input_schema"]))
             for t in TOOLS if "input_schema" in t]
-    decl.append(types.FunctionDeclaration(
-        name="buscar_noticias", description=DESC_NOTICIAS,
-        parameters_json_schema={"type": "object", "required": ["consulta"],
-                                "properties": {"consulta": {"type": "string",
-                                                            "description": "Qué buscar en la web."}}}))
     return decl
 
 
@@ -107,29 +97,6 @@ def _generar(client, modelo: str, contents, config):
                     raise
 
 
-def _buscar_noticias(consulta, client, modelo: str = MODELO_GEMINI) -> dict:
-    """Llamada aparte con solo Google Search: Gemini no permite mezclarlo con function calling."""
-    if not isinstance(consulta, str) or not consulta.strip():
-        return {"error": "Indica la consulta a buscar."}
-    try:
-        resp = client.models.generate_content(
-            model=modelo, contents=consulta,
-            config=types.GenerateContentConfig(tools=[types.Tool(google_search=types.GoogleSearch())]))
-    except Exception:  # noqa: BLE001 - sin búsqueda el agente igual responde
-        return {"error": ERR_SIN_BUSQUEDA}
-    cands = getattr(resp, "candidates", None) or []
-    meta = getattr(cands[0], "grounding_metadata", None) if cands else None
-    fuentes = []
-    for ch in getattr(meta, "grounding_chunks", None) or []:
-        web = getattr(ch, "web", None)
-        if web and (web.uri or web.title):
-            fuentes.append(f"{web.title} ({web.uri})" if web.title and web.uri else web.title or web.uri)
-    resumen = _texto(_partes(resp))
-    if not resumen:
-        return {"error": "La búsqueda no devolvió resultados."}
-    return {"resumen": resumen, "fuentes": fuentes}
-
-
 def responder_gemini(historial: list[dict], pagina: str, res: Resultados, client) -> Respuesta:
     """Bucle de function calling manual con Gemini. `historial` es la lista cruda de Content (dicts
     serializables, append-only); su último elemento es la pregunta del usuario ({"role": "user",
@@ -165,8 +132,7 @@ def responder_gemini(historial: list[dict], pagina: str, res: Resultados, client
                 args = dict(fc.args or {})
                 if fc.name == "buscar_noticias":
                     busquedas += 1
-                    out = (_buscar_noticias(args.get("consulta"), client, modelo) if busquedas <= MAX_BUSQUEDAS
-                           else {"error": ERR_TOPE_BUSQUEDA})
+                    out = ejecutar(fc.name, args, res) if busquedas <= MAX_BUSQUEDAS else {"error": ERR_TOPE_BUSQUEDA}
                 else:
                     out = ejecutar(fc.name, args, res)
                 respuestas.append(types.Part.from_function_response(name=fc.name, response=out))

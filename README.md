@@ -43,7 +43,7 @@ El agente funciona con Gemini (plan gratuito de Google AI Studio) o con Claude. 
    o como variable de entorno: `$env:GEMINI_API_KEY = "..."` (también se acepta `GOOGLE_API_KEY`).
 3. Si hay key de Gemini se usa Gemini; si no, `ANTHROPIC_API_KEY` (Claude). Para forzar uno: `PROVEEDOR_AGENTE = "gemini"` o `"claude"`.
 
-El modelo de Gemini por defecto es `gemini-3.5-flash` (si da 404 o 503 se prueba `gemini-3.5-flash-lite`); se cambia con `$env:MODELO_GEMINI = "..."` (otro modelo Flash del plan gratuito). El panel indica qué modelo responde. Con el plan gratuito hay un límite de consultas por minuto: si se supera, el agente avisa y basta esperar un momento. La búsqueda de noticias usa Google Search, que puede no estar incluida en el plan gratuito: en ese caso el agente responde sin noticias y lo avisa.
+El modelo de Gemini por defecto es `gemini-3.5-flash` (si da 404 o 503 se prueba `gemini-3.5-flash-lite`); se cambia con `$env:MODELO_GEMINI = "..."` (otro modelo Flash del plan gratuito). El panel indica qué modelo responde. Con el plan gratuito hay un límite de consultas por minuto: si se supera, el agente avisa y basta esperar un momento. Las noticias son gratis: la herramienta `buscar_noticias` lee el RSS de Google News (sin key) y el agente cita titulares con fecha y fuente; si no hay red responde sin noticias.
 
 **API key de Anthropic (opcional, para el agente con Claude).** Sin key la app funciona igual y el panel muestra conversaciones de ejemplo. Para activar el agente, una de dos:
 
@@ -85,7 +85,6 @@ Cubren carga y limpieza, auditoría, relación, pronóstico, simulación, negoci
 ├── scripts/               # grabar_ejemplos.py: graba conversaciones reales del agente
 ├── docs/
 │   ├── informe.md         # informe con los títulos pedidos en el caso
-│   ├── DECISIONES.md      # bitácora: qué se probó, qué se descartó y por qué
 │   └── arquitectura.md    # arquitectura AWS (diseño, no desplegado) + arquitectura/ con la infografía
 └── requirements.txt       # dependencias directas con versión fija
 ```
@@ -97,9 +96,9 @@ Cubren carga y limpieza, auditoría, relación, pronóstico, simulación, negoci
 | Código funcional | `src/` (lógica con pruebas en `tests/`) y `app/` |
 | Fórmula de costo de cada equipo | App: "Qué mueve el precio" · `src/relacion.py` · informe, "Resultados" |
 | Proyección con incertidumbre (rangos) | App, sección cliente: "Proyección de costos" (abanico P10/P50/P90, escenarios) · `src/pronostico.py` |
-| Horizonte y metodología justificados | App, sección análisis: "Validación de modelos" (backtest, cobertura, prueba con X) · informe, "Proyección de costos y horizonte" · `docs/DECISIONES.md` |
+| Horizonte y metodología justificados | App, sección análisis: "Validación de modelos" (backtest, cobertura, prueba con X) · informe, "Proyección de costos y horizonte" |
 | Uso para el negocio | App: "Presupuesto y proveedores" (P50 + reserva, verificador de cotizaciones) · `src/negocio.py` |
-| Agente de IA con conocimiento externo | Panel lateral en todas las páginas · `src/agente/` (herramientas + búsqueda web) |
+| Agente de IA con conocimiento externo | Panel lateral en todas las páginas · `src/agente/` (herramientas + noticias vía Google News) |
 | IA convencional vs agente | Panel del agente ("¿Qué hace este agente?") y página "Metodología" |
 | Arquitectura cloud con diagrama | `docs/arquitectura.md`, `docs/arquitectura/infografia_aws.svg` (diseño, no desplegado; ya no está en la app) |
 | Informe con los títulos pedidos | [`docs/informe.md`](docs/informe.md) |
@@ -115,5 +114,4 @@ Cubren carga y limpieza, auditoría, relación, pronóstico, simulación, negoci
 ## Documentación
 
 - [Informe](docs/informe.md): explicación del caso, supuestos, alternativas, resultados, proyección, mejoras y apreciaciones.
-- [Bitácora de decisiones](docs/DECISIONES.md): cada decisión con contexto, opciones, por qué y costo si estuviera mal.
 - [Arquitectura AWS](docs/arquitectura.md): diseño propuesto y justificación de cada servicio.

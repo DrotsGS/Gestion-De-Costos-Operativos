@@ -91,7 +91,7 @@ def test_evaluar_cotizacion_ok(res):
 
 def test_tools_incluyen_busqueda_web():
     assert [t["name"] for t in TOOLS] == ["consultar_resultados", "simular_escenario", "evaluar_cotizacion",
-                                          "web_search"]
+                                          "buscar_noticias", "web_search"]
 
 
 def test_bucle_usa_herramienta(res):
@@ -104,6 +104,18 @@ def test_bucle_usa_herramienta(res):
     assert primera["messages"][0]["content"].startswith("[Página: relacion]")
     resultado = segunda["messages"][-1]["content"][0]
     assert resultado["type"] == "tool_result" and resultado["tool_use_id"] == "tu_1" and not resultado["is_error"]
+
+
+def test_bucle_buscar_noticias(res, monkeypatch):
+    monkeypatch.setattr("src.agente.herramientas.buscar_noticias",
+                        lambda c, m=5: {"consulta": c, "noticias": [{"titulo": "Acero sube"}],
+                                        "fuente": "Google News (RSS)"})
+    client = FakeClient([tool_use("buscar_noticias", {"consulta": "precio acero"}), text("Reuters dice")])
+    r = responder([{"role": "user", "content": "noticias del acero"}], "resumen", res, client)
+    assert r.herramientas_usadas == ["buscar_noticias"] and not r.error
+    resultado = client.llamadas[1]["messages"][-1]["content"][0]
+    assert not resultado["is_error"] and "Acero sube" in resultado["content"]
+    assert "buscar_noticias" in client.llamadas[0]["system"]
 
 
 def test_bucle_pause_turn_y_busqueda_web(res):
@@ -201,3 +213,7 @@ def test_app_con_key_responde_con_cliente_falso(monkeypatch):
     assert any("consultar_resultados" in c.value for c in at.caption)
     at.button(key="agente_borrar").click().run()
     assert not any("Y domina" in m.value for m in at.markdown)
+
+
+def test_system_pide_respuestas_cortas_sin_tablas():
+    assert "panel angosto" in mod_agente.SYSTEM and "tablas" in mod_agente.SYSTEM
