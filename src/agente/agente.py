@@ -47,6 +47,7 @@ class Respuesta:
     texto: str
     herramientas_usadas: list[str] = field(default_factory=list)
     error: bool = False
+    modelo: str = ""  # modelo que respondió (solo Gemini)
 
 
 def _mensaje_error(exc: Exception) -> str:

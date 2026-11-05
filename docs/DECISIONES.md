@@ -218,6 +218,18 @@ Variantes con solo 5 o 10 años de historia (bloques 6 y 12) no mejoraron (peor 
 
 **Costo si estuviera mal.** **No se ha probado aún con la API real** (las pruebas usan un cliente simulado). Si el modelo o un parámetro no estuviera disponible, el panel mostraría un error controlado; se corrige con `MODELO_AGENTE` o ajustando la llamada. Pendiente del candidato: probarlo con su key y grabar ejemplos reales con `scripts/grabar_ejemplos.py`.
 
+## 2026-11-04 - Gemini como proveedor alternativo del agente
+
+**Contexto.** Para probar el agente sin pagar hace falta una key gratuita; Google AI Studio ofrece una para Gemini.
+
+**Opciones.** (a) Solo Claude. (b) Reemplazar Claude por Gemini. (c) Soportar ambos y elegir según la key disponible.
+
+**Decisión.** (c). Si hay `GEMINI_API_KEY` se usa Gemini; si no, `ANTHROPIC_API_KEY`; `PROVEEDOR_AGENTE` fuerza uno. Mismo prompt, mismas herramientas (sus esquemas se reutilizan) y mismo contrato de respuesta; cada proveedor guarda su propio historial. La búsqueda web es una herramienta aparte (`buscar_noticias`) que hace una llamada separada con Google Search, porque Gemini no siempre permite combinarla con function calling en la misma llamada.
+
+**Por qué.** El plan gratuito permite que cualquiera pruebe el agente sin costo, y mantener Claude no obliga a cambiar nada para quien ya tiene key.
+
+**Costo si estuviera mal.** **No se ha probado con la API real de Gemini** (las pruebas usan un cliente simulado con objetos del SDK). El plan gratuito tiene límites por minuto y por día; si se superan, el panel muestra un aviso. La calidad de las respuestas puede diferir de la de Claude.
+
 ## 2026-11-01 - Arquitectura AWS diseñada pero no desplegada
 
 **Contexto.** El caso pide una arquitectura cloud con diagrama; desplegar suma puntos extra pero no es obligatorio.

@@ -22,3 +22,7 @@ HORIZONTE_MIN_COB = 0.65
 
 # Modelo del agente del panel lateral (configurable por variable de entorno)
 MODELO_AGENTE = os.environ.get("MODELO_AGENTE", "claude-opus-5-5")
+
+# Modelo de Gemini (plan gratuito de Google AI Studio); se puede cambiar por otro modelo Flash del plan gratuito
+MODELO_GEMINI = os.environ.get("MODELO_GEMINI", "gemini-3.5-flash")
+MODELOS_GEMINI_RESPALDO = ("gemini-3.5-flash-lite",)  # se prueban si el principal da 404 o 503

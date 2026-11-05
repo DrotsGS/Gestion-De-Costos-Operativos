@@ -31,7 +31,21 @@ py -m venv .venv
 
 Se abre en `http://localhost:8501`. La primera carga calcula todos los modelos (~40 s); después queda en caché.
 
-**API key de Anthropic (opcional, para el agente).** Sin key la app funciona igual y el panel muestra conversaciones de ejemplo. Para activar el agente, una de dos:
+### Agente: Gemini (gratis) o Claude
+
+El agente funciona con Gemini (plan gratuito de Google AI Studio) o con Claude. Sin ninguna key la app funciona igual y el panel muestra conversaciones de ejemplo.
+
+1. Gemini (gratis): entrar a [aistudio.google.com](https://aistudio.google.com), pulsar **Get API key** y crear una key.
+2. Ponerla en `.streamlit\secrets.toml` (está en `.gitignore`, no se sube):
+   ```toml
+   GEMINI_API_KEY = "..."
+   ```
+   o como variable de entorno: `$env:GEMINI_API_KEY = "..."` (también se acepta `GOOGLE_API_KEY`).
+3. Si hay key de Gemini se usa Gemini; si no, `ANTHROPIC_API_KEY` (Claude). Para forzar uno: `PROVEEDOR_AGENTE = "gemini"` o `"claude"`.
+
+El modelo de Gemini por defecto es `gemini-3.5-flash` (si da 404 o 503 se prueba `gemini-3.5-flash-lite`); se cambia con `$env:MODELO_GEMINI = "..."` (otro modelo Flash del plan gratuito). El panel indica qué modelo responde. Con el plan gratuito hay un límite de consultas por minuto: si se supera, el agente avisa y basta esperar un momento. La búsqueda de noticias usa Google Search, que puede no estar incluida en el plan gratuito: en ese caso el agente responde sin noticias y lo avisa.
+
+**API key de Anthropic (opcional, para el agente con Claude).** Sin key la app funciona igual y el panel muestra conversaciones de ejemplo. Para activar el agente, una de dos:
 
 - Crear `.streamlit\secrets.toml` (está en `.gitignore`, no se sube) con:
   ```toml

@@ -176,7 +176,8 @@ def test_error_api_no_rompe(res):
 
 
 def test_app_sin_key_muestra_ejemplos(monkeypatch):
-    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    for k in ("ANTHROPIC_API_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY", "PROVEEDOR_AGENTE"):
+        monkeypatch.delenv(k, raising=False)
     monkeypatch.setenv("APP_RAPIDO", "1")
     at = AppTest.from_file(MAIN, default_timeout=120).run()
     assert not at.exception and any("Agente desactivado" in str(m.value) for m in at.info)
@@ -187,6 +188,8 @@ def test_app_sin_key_muestra_ejemplos(monkeypatch):
 def test_app_con_key_responde_con_cliente_falso(monkeypatch):
     from app import layout
     client = FakeClient([tool_use("consultar_resultados", {"tema": "formula"}), text("Y domina el Equipo 1.")])
+    for k in ("GEMINI_API_KEY", "GOOGLE_API_KEY", "PROVEEDOR_AGENTE"):
+        monkeypatch.delenv(k, raising=False)
     monkeypatch.setenv("ANTHROPIC_API_KEY", "clave-falsa")
     monkeypatch.setenv("APP_RAPIDO", "1")
     monkeypatch.setattr(layout, "_crear_cliente", lambda key: client)

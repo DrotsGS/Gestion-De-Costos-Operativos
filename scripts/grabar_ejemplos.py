@@ -1,19 +1,17 @@
 """Graba 3 conversaciones reales con el agente en app/ejemplos/conversaciones.json.
 
-Uso (con tu key): ANTHROPIC_API_KEY=... python scripts/grabar_ejemplos.py
+Uso (con tu key): GEMINI_API_KEY=... o ANTHROPIC_API_KEY=... python scripts/grabar_ejemplos.py
 No lo ejecutan las pruebas.
 """
 import json
-import os
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-import anthropic  # noqa: E402
-
-from app.layout import PAGINAS  # noqa: E402
+from app.layout import PAGINAS, _crear_cliente, _crear_cliente_gemini, elegir_proveedor  # noqa: E402
 from src.agente.agente import responder  # noqa: E402
+from src.agente.agente_gemini import responder_gemini  # noqa: E402
 from src.pipeline import build_results  # noqa: E402
 
 SALIDA = Path(__file__).resolve().parents[1] / "app" / "ejemplos" / "conversaciones.json"
@@ -25,14 +23,17 @@ PREGUNTAS = [
 
 
 def main() -> None:
-    key = os.environ.get("ANTHROPIC_API_KEY")
-    if not key:
-        sys.exit("Define ANTHROPIC_API_KEY antes de ejecutar este script.")
-    client = anthropic.Anthropic(api_key=key, max_retries=2, timeout=60.0)
+    elegido = elegir_proveedor()
+    if not elegido:
+        sys.exit("Define GEMINI_API_KEY o ANTHROPIC_API_KEY antes de ejecutar este script.")
+    proveedor, key = elegido
+    gemini = proveedor == "gemini"
+    client = _crear_cliente_gemini(key) if gemini else _crear_cliente(key)
+    responder_fn = responder_gemini if gemini else responder
     res = build_results()
     ejemplos = []
     for pagina, pregunta in PREGUNTAS:
-        r = responder([{"role": "user", "content": pregunta}], PAGINAS[pagina], res, client)
+        r = responder_fn([{"role": "user", "content": pregunta}], PAGINAS[pagina], res, client)
         print(f"- {pregunta}\n  herramientas: {r.herramientas_usadas}  error: {r.error}")
         if r.error:
             sys.exit(f"Falló la pregunta: {r.texto}")
