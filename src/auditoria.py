@@ -1,4 +1,4 @@
-"""Auditoría de calidad de datos: hallazgos mostrados en la página Calidad de datos."""
+"""Auditoría de calidad de datos: hallazgos mostrados en la página Datos y trampas."""
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal

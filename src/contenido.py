@@ -106,7 +106,7 @@ SUPUESTOS = [
     "Las cantidades de ejemplo del presupuesto son editables; el caso no entrega cantidades.",
     "La identificación de X, Y y Z es una hipótesis y no afecta al modelo.",
     "Los pesos se estimaron con 2010-2023 y se asumen estables (se verifican con regresión móvil).",
-    "La cobertura empírica de las bandas es menor a la nominal (P10-P90 = 80 %); ver página de Proyecciones.",
+    "La cobertura empírica de las bandas es menor a la nominal (P10-P90 = 80 %); ver página de Validación de modelos.",
     "Una compra puntual suma ≈ 1,8 % de ruido diario sobre el costo promedio mensual.",
     "El atípico de Z se corrigió por interpolación lineal.",
     "El pronóstico parte en 2023-09 y es confiable solo hasta el horizonte elegido.",

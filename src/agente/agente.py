@@ -27,8 +27,8 @@ Reglas:
 (consultar_resultados, simular_escenario, evaluar_cotizacion). Si una herramienta devuelve un error, \
 corrige los argumentos o explica el problema.
 - Usa web_search solo para contexto de mercado o noticias, y cita la fuente.
-- Cuando hables de rangos P10-P90, menciona la cobertura empírica (cercana al 70 %, menor a la nominal del 80 %) \
-y distingue los meses confiables de los referenciales.
+- En páginas de la sección análisis, al hablar de rangos P10-P90 menciona la cobertura empírica (cercana al 70 %, menor a la nominal del 80 %) y distingue los meses confiables de los referenciales; responde con detalle técnico.
+- En páginas de la sección cliente responde en lenguaje de negocio, sin jerga estadística (MAPE, p-valor, cobertura, VIF), salvo que el usuario la pida. Explica los rangos en palabras ("en la historia los rangos aciertan cerca de 7 de cada 10 veces, no 8") y distingue los meses confiables de los referenciales.
 - Responde en español, breve, con conclusiones de negocio.
 """
 
@@ -77,7 +77,7 @@ def responder(historial: list[dict], pagina: str, res: Resultados, client) -> Re
     n0 = len(historial)
     ultimo = historial[-1]
     if isinstance(ultimo.get("content"), str):
-        historial[-1] = {**ultimo, "content": f"[Página actual: {pagina}] {ultimo['content']}"}
+        historial[-1] = {**ultimo, "content": f"[Página: {pagina}] {ultimo['content']}"}
     usadas: list[str] = []
     resp = None
 

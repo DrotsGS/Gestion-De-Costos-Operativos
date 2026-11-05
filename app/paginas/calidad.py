@@ -1,4 +1,4 @@
-"""Página 2: Calidad de datos y trampas."""
+"""Página: Datos y trampas (sección análisis)."""
 import pandas as pd
 import streamlit as st
 
@@ -53,7 +53,7 @@ def _tarjeta(h, res: Resultados) -> None:
 
 def render(res: Resultados) -> None:
     aplicar_css()
-    st.title("🔍 Calidad de datos y trampas")
+    st.title("🔍 Datos y trampas")
     st.markdown("Hallazgos de la auditoría, de mayor a menor severidad.")
     for h in sorted(res.hallazgos, key=lambda x: ORDEN[x.severidad]):
         _tarjeta(h, res)

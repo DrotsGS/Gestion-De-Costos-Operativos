@@ -4,7 +4,7 @@ App web (Streamlit) que estima el costo de dos equipos críticos de una construc
 
 ## Hallazgos clave
 
-1. **Equipo 1 = 0,20·X + 0,80·Y; Equipo 2 ≈ ⅓·X + ⅓·Y + ⅓·Z** (R² 0,9997, cointegrados, pesos estables 2010-2023). Como los pesos multiplican precios, Y explica ≈ 96 % del costo del Equipo 1 y Z ≈ 77 % del Equipo 2.
+1. **Equipo 1 = 0,20·X + 0,80·Y; Equipo 2 ≈ ⅓·X + ⅓·Y + ⅓·Z** (R² 0,9997, cointegrados, pesos estables 2010-2023). Como los pesos multiplican precios, Y explica ≈ 96,5 % del costo del Equipo 1 y Z ≈ 77,5 % del Equipo 2.
 2. **Z correlaciona 0,84 con el Equipo 1 pero no pesa nada** (p-valor 0,88): las materias primas se mueven juntas y la correlación engaña.
 3. **Ningún modelo le gana al último valor.** En el backtest (2016-2023), ARIMA, ETS y promedio móvil no superan con claridad a la caminata aleatoria; el promedio móvil de 3 meses es el peor a 1 mes.
 4. **Horizonte confiable: 3 meses** (MAPE ≤ 15 % y cobertura ≥ 65 %). Se proyectan 12 meses como referencia; la cobertura real del rango P10-P90 es ≈ 70 % (nominal 80 %) y se muestra tal cual.
@@ -15,8 +15,8 @@ App web (Streamlit) que estima el costo de dos equipos críticos de una construc
 > Espacio para capturas de la app y el video del agente (pendiente, lo graba el candidato).
 
 - Resumen ejecutivo: _(captura pendiente)_
-- Calidad de datos y trampas: _(captura pendiente)_
-- Proyecciones: _(captura pendiente)_
+- Datos y trampas: _(captura pendiente)_
+- Proyección de costos: _(captura pendiente)_
 - Video del agente en uso: _(enlace pendiente)_
 
 ## Cómo correrla (Windows)
@@ -66,13 +66,13 @@ Cubren carga y limpieza, auditoría, relación, pronóstico, simulación, negoci
 │   ├── contenido.py       #   textos fijos (texto oculto, hipótesis X/Y/Z, IA vs agente, supuestos)
 │   ├── config.py          #   constantes (fecha del caso, umbrales del horizonte, modelo del agente)
 │   └── agente/            #   bucle del agente y sus herramientas
-├── app/                   # Streamlit: main.py, layout (panel del agente), estilo, gráficos, paginas/
+├── app/                   # Streamlit: main.py, layout (secciones y panel del agente), estilo, gráficos, paginas/ (cliente: resumen, proyecciones, presupuesto; análisis: calidad, relacion, validacion, metodologia)
 ├── tests/                 # pytest
 ├── scripts/               # grabar_ejemplos.py: graba conversaciones reales del agente
 ├── docs/
 │   ├── informe.md         # informe con los títulos pedidos en el caso
 │   ├── DECISIONES.md      # bitácora: qué se probó, qué se descartó y por qué
-│   └── arquitectura.md    # arquitectura AWS (diseño) + arquitectura/ con la infografía
+│   └── arquitectura.md    # arquitectura AWS (diseño, no desplegado) + arquitectura/ con la infografía
 └── requirements.txt       # dependencias directas con versión fija
 ```
 
@@ -82,12 +82,12 @@ Cubren carga y limpieza, auditoría, relación, pronóstico, simulación, negoci
 |---|---|
 | Código funcional | `src/` (lógica con pruebas en `tests/`) y `app/` |
 | Fórmula de costo de cada equipo | App: "Qué mueve el precio" · `src/relacion.py` · informe, "Resultados" |
-| Proyección con incertidumbre (rangos) | App: "Proyecciones" (abanico P10/P50/P90, escenarios) · `src/pronostico.py` |
-| Horizonte y metodología justificados | App: "Proyecciones" (tabla de backtest y cobertura) · informe, "Proyección de costos y horizonte" · `docs/DECISIONES.md` |
-| Uso para el negocio | App: "Presupuesto" (P50 + reserva, verificador de cotizaciones) · `src/negocio.py` |
+| Proyección con incertidumbre (rangos) | App, sección cliente: "Proyección de costos" (abanico P10/P50/P90, escenarios) · `src/pronostico.py` |
+| Horizonte y metodología justificados | App, sección análisis: "Validación de modelos" (backtest, cobertura, prueba con X) · informe, "Proyección de costos y horizonte" · `docs/DECISIONES.md` |
+| Uso para el negocio | App: "Presupuesto y proveedores" (P50 + reserva, verificador de cotizaciones) · `src/negocio.py` |
 | Agente de IA con conocimiento externo | Panel lateral en todas las páginas · `src/agente/` (herramientas + búsqueda web) |
-| IA convencional vs agente | Panel del agente ("¿Qué hace este agente?") y página "Arquitectura y metodología" |
-| Arquitectura cloud con diagrama | `docs/arquitectura.md`, `docs/arquitectura/infografia_aws.svg` y página "Arquitectura y metodología" (diseño, no desplegado) |
+| IA convencional vs agente | Panel del agente ("¿Qué hace este agente?") y página "Metodología" |
+| Arquitectura cloud con diagrama | `docs/arquitectura.md`, `docs/arquitectura/infografia_aws.svg` (diseño, no desplegado; ya no está en la app) |
 | Informe con los títulos pedidos | [`docs/informe.md`](docs/informe.md) |
 | Repositorio en Markdown | Este README, `docs/` |
 

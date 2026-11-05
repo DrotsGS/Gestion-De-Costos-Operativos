@@ -2,7 +2,7 @@
 
 Infografía: [`arquitectura/infografia_aws.svg`](arquitectura/infografia_aws.svg) (también
 [`infografia_canva.png`](arquitectura/infografia_canva.png) y [`infografia_aws.html`](arquitectura/infografia_aws.html)).
-La página "Arquitectura y metodología" de la app la muestra junto con la tabla de componentes.
+Es documentación de diseño; la app no incluye esta arquitectura.
 
 ```mermaid
 flowchart LR

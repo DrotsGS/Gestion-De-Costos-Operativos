@@ -1,4 +1,4 @@
-"""Página 5: Presupuesto y verificador de cotizaciones."""
+"""Presupuesto y proveedores (sección cliente)."""
 import pandas as pd
 import streamlit as st
 
@@ -40,11 +40,11 @@ def _veredicto(fans: dict, tema: str) -> None:
 
 def render(res: Resultados) -> None:
     aplicar_css()
-    st.title("💰 Presupuesto")
+    st.title("💰 Presupuesto y proveedores")
     fans = res.fans["base"]
     meses = {f"{d:%Y-%m}" for d in fans["Equipo1"].index}
-    st.markdown("Cantidades **de ejemplo** (el caso no entrega cantidades): edítalas, agrega o quita filas. "
-                "Meses en formato AAAA-MM dentro del pronóstico. El presupuesto usa el escenario base.")
+    st.markdown("Las cantidades son **de ejemplo** (el caso no las entrega): edítalas, agrega o quita filas. "
+                "Usa meses en formato AAAA-MM dentro del pronóstico; el cálculo parte del escenario normal.")
     cant = st.data_editor(CANTIDADES_EJEMPLO, num_rows="dynamic", width="stretch", key="cantidades",
                           column_config={"Equipo1": st.column_config.NumberColumn("Equipo1", min_value=0),
                                          "Equipo2": st.column_config.NumberColumn("Equipo2", min_value=0)})
@@ -57,10 +57,11 @@ def render(res: Resultados) -> None:
         except ValueError as e:  # red de seguridad
             st.error(str(e))
         else:
-            st.metric("Presupuesto total (P50 + reserva)", fmt_es(b["total"].sum(), 0),
-                      help="Reserva = Σ cantidad × (P90 − P50).")
-            st.caption(f"Reserva total: {fmt_es(b['reserva'].sum(), 0)} sobre un costo esperado de "
-                       f"{fmt_es(b['p50'].sum(), 0)}.")
+            m1, m2, m3 = st.columns(3)
+            m1.metric("Presupuesto esperado", fmt_es(b["p50"].sum(), 0), help="Σ cantidad × costo esperado.")
+            m2.metric("Reserva", fmt_es(b["reserva"].sum(), 0),
+                      help="Colchón para un escenario adverso: Σ cantidad × (P90 − P50).")
+            m3.metric("Total a aprobar", fmt_es(b["total"].sum(), 0), help="Presupuesto esperado + reserva.")
             with st.expander("Ver tabla", expanded=True):
                 st.dataframe(b.rename(columns={"p50": "Costo esperado (P50)", "reserva": "Reserva",
                                                "total": "Total"}).map(lambda v: fmt_es(v, 0))

@@ -101,7 +101,7 @@ def test_bucle_usa_herramienta(res):
     assert r.herramientas_usadas == ["consultar_resultados"] and not r.error
     assert r.texto == "Equipo 1 ≈ 80% Y"
     primera, segunda = client.llamadas
-    assert primera["messages"][0]["content"].startswith("[Página actual: relacion]")
+    assert primera["messages"][0]["content"].startswith("[Página: relacion]")
     resultado = segunda["messages"][-1]["content"][0]
     assert resultado["type"] == "tool_result" and resultado["tool_use_id"] == "tu_1" and not resultado["is_error"]
 
@@ -129,13 +129,13 @@ def test_historial_append_only_entre_preguntas(res):
     client = FakeClient([thinking_y_tool("consultar_resultados", {"tema": "calidad"}), text("r1"), text("r2")])
     responder(raw, "relacion", res, client)
     enviado = json.loads(json.dumps(raw))
-    assert len(raw) == 4 and raw[0]["content"] == "[Página actual: relacion] pregunta 1"
+    assert len(raw) == 4 and raw[0]["content"] == "[Página: relacion] pregunta 1"
     assert raw[1]["content"][0]["type"] == "thinking" and raw[2]["content"][0]["type"] == "tool_result"
     raw.append({"role": "user", "content": "pregunta 2"})
     responder(raw, "presupuesto", res, client)
     n = len(enviado)
     assert client.llamadas[-1]["messages"][:n] == enviado
-    assert client.llamadas[-1]["messages"][n]["content"] == "[Página actual: presupuesto] pregunta 2"
+    assert client.llamadas[-1]["messages"][n]["content"] == "[Página: presupuesto] pregunta 2"
 
 
 def test_rollback_si_falla(res):

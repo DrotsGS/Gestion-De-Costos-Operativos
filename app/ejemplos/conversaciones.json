@@ -2,13 +2,13 @@
   {
     "ilustrativo": true,
     "pregunta": "¿De qué depende el costo del Equipo 1?",
-    "respuesta": "Ejemplo ilustrativo: según el análisis, la fórmula del Equipo 1 tiene pesos (por unidad de precio) de ≈ 0,8 en Y y ≈ 0,2 en X, con Z casi nulo; esos pesos no son porcentajes del costo. Como Y cuesta mucho más que X, Y explica ≈ 96 % del costo (parte del costo) y X ≈ 4 %. En términos de negocio, el costo del Equipo 1 sigue sobre todo al precio de Y (probable acero, una hipótesis que no afecta al modelo). Los rangos P10-P90 tienen una cobertura empírica menor a la nominal del 80 %, y el horizonte confiable es de 3 meses.",
+    "respuesta": "Ejemplo ilustrativo: según el análisis, la fórmula del Equipo 1 tiene pesos (por unidad de precio) de ≈ 0,8 en Y y ≈ 0,2 en X, con Z casi nulo; esos pesos no son porcentajes del costo. Como Y cuesta mucho más que X, Y explica ≈ 96,5 % del costo (parte del costo) y X ≈ 3,5 %. En términos de negocio, el costo del Equipo 1 sigue sobre todo al precio de Y (probable acero, una hipótesis que no afecta al modelo). Los rangos P10-P90 tienen una cobertura empírica menor a la nominal del 80 %, y el horizonte confiable es de 3 meses.",
     "herramientas": ["consultar_resultados"]
   },
   {
     "ilustrativo": true,
     "pregunta": "¿Qué pasaría con el Equipo 1 si Y sube 20 %?",
-    "respuesta": "Ejemplo ilustrativo: al simular un alza sostenida de 20 % en Y, el costo esperado (P50) del Equipo 1 sube en proporción a la parte del costo que explica Y (≈ 96 %), es decir, ≈ 19 % frente al escenario base, tanto en el mes 1 como al final del horizonte confiable de 3 meses. Conviene cubrir esa exposición con la reserva del presupuesto.",
+    "respuesta": "Ejemplo ilustrativo: al simular un alza sostenida de 20 % en Y, el costo esperado (P50) del Equipo 1 sube en proporción a la parte del costo que explica Y (≈ 96,5 %), es decir, ≈ 19 % frente al escenario base, tanto en el mes 1 como al final del horizonte confiable de 3 meses. Conviene cubrir esa exposición con la reserva del presupuesto.",
     "herramientas": ["simular_escenario"]
   },
   {

@@ -24,20 +24,38 @@ def _texto(at) -> str:
                      + [e.value for e in at.error] + [w.value for w in at.warning] + [i.value for i in at.info])
 
 
+def _pagina(at) -> str:
+    """Texto de la columna de contenido (sin el panel del agente)."""
+    c = at.columns[0]
+    return "\n".join([m.value for m in c.markdown] + [x.value for x in c.caption] + [i.value for i in c.info])
+
+
 def test_app_arranca_sin_errores(rapido):
     at = AppTest.from_file(MAIN, default_timeout=120).run()
     assert not at.exception
 
 
-def test_resumen_muestra_kpis_y_cobertura(rapido):
+def test_resumen_lenguaje_de_negocio(rapido):
     at = AppTest.from_file(MAIN, default_timeout=120).run()
     assert not at.exception
-    assert len(at.metric) == 6  # 3 KPIs por equipo
     etiquetas = [m.label for m in at.metric]
-    assert sum(e.startswith("Costo esperado (P50)") for e in etiquetas) == 4
-    assert sum(e.startswith("Reserva sugerida") for e in etiquetas) == 2
+    assert sum(e.startswith("Costo esperado") for e in etiquetas) == 4
+    assert "Reserva recomendada" in etiquetas
     assert all(m.value and m.value != "nan" for m in at.metric)
-    assert sum("nominal 80 %" in c.value for c in at.caption) == 4  # cobertura empírica junto a cada rango
+    txt = _pagina(at)
+    for jerga in ("cobertura", "p-value", "p-valor", "mape"):
+        assert jerga not in txt.lower()
+    assert "de cada 10 veces" in txt and "Un alza de 10 %" in txt
+    assert "8 de cada 10" in txt and "cada trimestre" in txt and "acero" in txt and "aluminio" in txt
+
+
+def test_navegacion_dos_secciones():
+    from app.layout import PAGINAS, SECCIONES
+    assert list(SECCIONES) == ["🏢 Para el cliente", "🔧 Detrás del análisis"]
+    assert [p[0] for p in SECCIONES["🏢 Para el cliente"]] == ["resumen", "proyecciones", "presupuesto"]
+    assert "validacion" in [p[0] for p in SECCIONES["🔧 Detrás del análisis"]]
+    assert PAGINAS["resumen"] == "Resumen ejecutivo · sección cliente"
+    assert PAGINAS["validacion"] == "Validación de modelos · sección análisis"
 
 
 def test_pagina_calidad_contenido(rapido):
@@ -121,20 +139,31 @@ def test_pagina_relacion(rapido):
     assert any(m.label.startswith("p-valor de cointegración") for m in at.metric)
 
 
-def test_pagina_proyecciones(rapido):
+def test_pagina_proyecciones_cliente(rapido):
     at = _ir("proyecciones")
-    assert len(at.get("plotly_chart")) == 2  # abanico y X fuera de muestra
-    assert sum(e.label == "Ver tabla" for e in at.expander) == 2
+    assert len(at.get("plotly_chart")) == 1  # solo el abanico
+    assert sum(e.label == "Ver tabla" for e in at.expander) == 1
+    assert not [d for d in at.dataframe if "Nominal" in getattr(d.value, "columns", [])]
+    txt = _pagina(at)
+    assert "MAPE" not in txt and "cobertura" not in txt.lower()
+    assert "Lo más probable" in txt and "8 de cada 10" in txt
+
+
+def test_pagina_validacion(rapido):
+    at = _ir("validacion")
+    assert len(at.get("plotly_chart")) == 1  # X fuera de muestra
     cols = [tuple(d.value.columns) for d in at.dataframe if hasattr(d.value, "columns")]
     assert ("Horizonte (m)", "Nominal", "Empírica", "Brecha") in cols
-    assert "Por qué" in _texto(at) and "caminata aleatoria" in _texto(at) and "pp" in _texto(at)
-    titulo = json.loads(at.get("plotly_chart")[1].proto.spec)["layout"]["title"]["text"]
+    txt = _texto(at)
+    assert "MAPE" in txt and "Por qué" in txt and "caminata aleatoria" in txt and "pp" in txt
+    assert "bootstrap por bloques" in txt
+    titulo = json.loads(at.get("plotly_chart")[0].proto.spec)["layout"]["title"]["text"]
     assert " de 7 meses" in titulo
 
 
 def test_pagina_presupuesto_veredicto(rapido):
     at = _ir("presupuesto")
-    assert any(m.label.startswith("Presupuesto total") for m in at.metric)
+    assert any(m.label == "Total a aprobar" for m in at.metric)
     assert len(at.dataframe) >= 1
     at.number_input[0].set_value(100000.0)
     at.button[0].click().run()
@@ -179,21 +208,17 @@ def test_relacion_advierte_correlacion_enganosa(rapido):
     assert "por coincidencia" in txt and "Z (probable: aluminio)" in txt
 
 
-def test_pagina_arquitectura(rapido):
-    from app.paginas.arquitectura import COMPONENTES
+def test_pagina_metodologia(rapido):
     from src.contenido import IA_VS_AGENTE
-    at = _ir("arquitectura")
-    assert len(at.get("image")) == 1  # infografía SVG
-    cols = [tuple(d.value.columns) for d in at.dataframe]
-    assert ("Componente", "Servicio AWS", "Qué hace", "Por qué") in cols
-    assert len(COMPONENTES) >= 10
+    at = _ir("metodologia")
+    assert len(at.get("image")) == 0 and len(at.dataframe) == 0
     txt = _texto(at)
-    assert IA_VS_AGENTE.splitlines()[0] in txt and "no desplegado" in txt
+    assert IA_VS_AGENTE.splitlines()[0] in txt
     assert "streamlit run app/main.py" in txt
-    assert any(e.label == "Vista simplificada del flujo" for e in at.expander)
+    assert "AWS" not in txt
 
 
-def test_arquitectura_local_sin_barra_suelta():
-    from app.paginas.arquitectura import LOCAL
+def test_metodologia_local_sin_barra_suelta():
+    from app.paginas.metodologia import LOCAL
     assert LOCAL.startswith("```bash") and not LOCAL.startswith("\\")
     assert "\n\\n" not in LOCAL

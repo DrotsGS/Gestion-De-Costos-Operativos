@@ -39,7 +39,7 @@ Registro de lo que se probó, lo que se descartó y lo que se eligió, en orden 
 
 **Opciones.** (a) Corregir a mano la fecha conocida. (b) Corregir todo pico que se revierte (> 8 % ida y vuelta). (c) Corregir solo si se cumplen **ambas** condiciones: pico revertido > 8 % **y** precisión decimal anómala; si se cumple solo una, advertir.
 
-**Decisión.** (c), en `src/utils.py` (`detect_anomalies` y `clean_series`). El punto corregido se reemplaza por interpolación lineal en el tiempo (Z 2014-03-25: 1.911,97 → 1.696,75). Cada corrección queda registrada y se muestra en la página "Calidad de datos". `Datos/` nunca se edita.
+**Decisión.** (c), en `src/utils.py` (`detect_anomalies` y `clean_series`). El punto corregido se reemplaza por interpolación lineal en el tiempo (Z 2014-03-25: 1.911,97 → 1.696,75). Cada corrección queda registrada y se muestra en la página "Datos y trampas". `Datos/` nunca se edita.
 
 **Por qué.** Una regla genérica sirve con datos nuevos, a diferencia de fijar la fecha a mano. Exigir las dos señales evita borrar eventos reales como la caída del COVID en marzo de 2020.
 
@@ -84,7 +84,7 @@ Resultado (mensual 2010-01 a 2023-08):
 | Equipo 1 | 0,200·X + 0,800·Y + 0,000·Z | 0,88 | 0,9997 | 7,7·10⁻²⁰ | Y entre 0,782 y 0,801 |
 | Equipo 2 | 0,332·X + 0,335·Y + 0,333·Z | ≈ 10⁻²²¹ | 0,9997 | 4,2·10⁻²⁴ | cada peso entre 0,31 y 0,36 |
 
-**Por qué.** La fórmula restringida es una media ponderada de precios fácil de leer y casi coincide con OLS libre (E1: 0,198 X + 0,801 Y − 0,0001 Z, intercepto no significativo, p = 0,97), así que la restricción no fuerza nada. La cointegración descarta una regresión espuria entre series con tendencia. Los pesos móviles muestran que la relación es estable en el tiempo. Los desfases no aportan: el R² baja de 0,9997 (sin desfase) a 0,94 con 1 mes. Ojo: los pesos multiplican precios de distinta escala; con precios de agosto 2023, Y explica ≈ 96 % del costo del Equipo 1 y Z ≈ 77 % del Equipo 2 (pesos iguales, pero Z cuesta ≈ 2.133 frente a ≈ 556 de Y y ≈ 85 de X).
+**Por qué.** La fórmula restringida es una media ponderada de precios fácil de leer y casi coincide con OLS libre (E1: 0,198 X + 0,801 Y − 0,0001 Z, intercepto no significativo, p = 0,97), así que la restricción no fuerza nada. La cointegración descarta una regresión espuria entre series con tendencia. Los pesos móviles muestran que la relación es estable en el tiempo. Los desfases no aportan: el R² baja de 0,9997 (sin desfase) a 0,94 con 1 mes. Ojo: los pesos multiplican precios de distinta escala; con precios de agosto 2023, Y explica ≈ 96,5 % del costo del Equipo 1 y Z ≈ 77 % del Equipo 2 (pesos iguales, pero Z cuesta ≈ 2.133 frente a ≈ 556 de Y y ≈ 85 de X).
 
 **Costo si estuviera mal.** Si la relación real cambiara (otro proveedor, otra receta), la fórmula quedaría obsoleta. Se mitiga con los pesos móviles, que en una versión productiva servirían como alerta.
 
@@ -148,7 +148,7 @@ Variantes con solo 5 o 10 años de historia (bloques 6 y 12) no mejoraron (peor 
 
 **Decisión.** (c) para esta entrega; (b) queda como mejora futura.
 
-**Por qué.** Un factor arbitrario ajustado sobre el mismo backtest que lo evalúa es sobreajuste. La calibración conformal es el camino correcto, pero no hubo tiempo de validarla bien. Mostrar el número real es más honesto que esconderlo: la app lo indica en Proyecciones y el agente tiene la instrucción de mencionarlo.
+**Por qué.** Un factor arbitrario ajustado sobre el mismo backtest que lo evalúa es sobreajuste. La calibración conformal es el camino correcto, pero no hubo tiempo de validarla bien. Mostrar el número real es más honesto que esconderlo: la app lo indica en Validación de modelos y el agente tiene la instrucción de mencionarlo.
 
 **Costo si estuviera mal.** Aproximadamente 3 de cada 10 meses el costo real cae fuera del rango (en lugar de 2 de cada 10). En presupuesto, la reserva P90 − P50 cubre algo menos de lo que su nombre sugiere.
 
@@ -194,7 +194,7 @@ Variantes con solo 5 o 10 años de historia (bloques 6 y 12) no mejoraron (peor 
 
 **Opciones.** (a) Notebooks de Jupyter. (b) Dashboard en Power BI / Tableau. (c) App web en Streamlit. (d) Front-end propio (React + API).
 
-**Decisión.** Streamlit, 6 páginas (Resumen ejecutivo, Calidad de datos y trampas, Qué mueve el precio, Proyecciones, Presupuesto, Arquitectura y metodología) con el panel del agente a la derecha en todas. La lógica vive en `src/` con pruebas; la app solo la llama. Los resultados se calculan una vez por proceso (~40 s) y quedan en caché.
+**Decisión.** Streamlit, 7 páginas en dos secciones (cliente: Resumen ejecutivo, Proyección de costos, Presupuesto y proveedores; análisis: Datos y trampas, Qué mueve el precio, Validación de modelos, Metodología) con el panel del agente a la derecha en todas. La lógica vive en `src/` con pruebas; la app solo la llama. Los resultados se calculan una vez por proceso (~40 s) y quedan en caché.
 
 **Por qué.** Todo en Python, interactivo y fácil de correr en local. Permite el panel lateral del agente. Power BI no permite integrar el agente ni las simulaciones con la misma facilidad, y un front-end propio no cabía en 4 días.
 
@@ -224,7 +224,7 @@ Variantes con solo 5 o 10 años de historia (bloques 6 y 12) no mejoraron (peor 
 
 **Opciones.** (a) Diseñar y desplegar. (b) Solo diseñar, con una infografía y una tabla de servicios justificada.
 
-**Decisión.** (b). Diseño en `docs/arquitectura.md` e infografía en `docs/arquitectura/` (SVG, HTML y versión PNG hecha en Canva), visibles en la página "Arquitectura y metodología". Servicios: EventBridge + Lambda (ingesta), S3 en tres zonas, ECS Fargate (procesamiento y reentrenamiento), Glue + Athena, App Runner + ECR (app), Claude vía Bedrock o API de Anthropic, Secrets Manager, IAM, CloudWatch + Budgets.
+**Decisión.** (b). Diseño en `docs/arquitectura.md` e infografía en `docs/arquitectura/` (SVG, HTML y versión PNG hecha en Canva) (ya no se muestran en la app). Servicios: EventBridge + Lambda (ingesta), S3 en tres zonas, ECS Fargate (procesamiento y reentrenamiento), Glue + Athena, App Runner + ECR (app), Claude vía Bedrock o API de Anthropic, Secrets Manager, IAM, CloudWatch + Budgets.
 
 **Por qué.** Con 4 días, el tiempo rendía más en el análisis y la app. Desplegar implica costo, credenciales y riesgo de dejar recursos abiertos sin poder mantenerlos. El diseño es serverless o de contenedores gestionados para que el despliegue posterior sea directo.
 

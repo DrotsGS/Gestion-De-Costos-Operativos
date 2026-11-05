@@ -16,7 +16,7 @@ ETIQUETAS = {
     "Z": "Z (probable: aluminio)",
 }
 
-# Criterio del horizonte confiable (usado por el pipeline y por la página de Proyecciones)
+# Criterio del horizonte confiable (usado por el pipeline y por la página de Validación de modelos)
 HORIZONTE_MAX_MAPE = 0.15
 HORIZONTE_MIN_COB = 0.65
 

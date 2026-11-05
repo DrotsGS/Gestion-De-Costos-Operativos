@@ -19,9 +19,24 @@ def get_results() -> Resultados:
     return build_results()
 
 
-PAGINAS = {"resumen": "Resumen ejecutivo", "calidad": "Calidad de datos", "relacion": "Qué mueve el precio",
-           "proyecciones": "Proyecciones", "presupuesto": "Presupuesto",
-           "arquitectura": "Arquitectura y metodología"}
+# Navegación: sección -> páginas (id, archivo, título, ícono)
+SECCIONES = {
+    "🏢 Para el cliente": [
+        ("resumen", "paginas/resumen.py", "Resumen ejecutivo", "📋"),
+        ("proyecciones", "paginas/proyecciones.py", "Proyección de costos", "📈"),
+        ("presupuesto", "paginas/presupuesto.py", "Presupuesto y proveedores", "💰"),
+    ],
+    "🔧 Detrás del análisis": [
+        ("calidad", "paginas/calidad.py", "Datos y trampas", "🔍"),
+        ("relacion", "paginas/relacion.py", "Qué mueve el precio", "🔗"),
+        ("validacion", "paginas/validacion.py", "Validación de modelos", "✅"),
+        ("metodologia", "paginas/metodologia.py", "Metodología", "🏗️"),
+    ],
+}
+SECCION_CLIENTE = "🏢 Para el cliente"
+# id -> "Título · sección cliente|análisis" (se antepone a la pregunta del agente)
+PAGINAS = {pid: f"{titulo} · sección {'cliente' if sec == SECCION_CLIENTE else 'análisis'}"
+           for sec, pags in SECCIONES.items() for pid, _, titulo, _ in pags}
 EJEMPLOS = Path(__file__).resolve().parent / "ejemplos" / "conversaciones.json"
 CLAVE_CHAT = "agente_chat"  # lista para mostrar
 CLAVE_CRUDO = "agente_crudo"  # lista cruda para la API (append-only)

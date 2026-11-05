@@ -8,12 +8,11 @@ import streamlit as st  # noqa: E402
 
 st.set_page_config(page_title="Costos de equipos", page_icon="📋", layout="wide")
 
-pagina = st.navigation([
-    st.Page("paginas/resumen.py", title="Resumen ejecutivo", icon="📋", default=True),
-    st.Page("paginas/calidad.py", title="Calidad de datos y trampas", icon="🔍"),
-    st.Page("paginas/relacion.py", title="Qué mueve el precio", icon="🔗"),
-    st.Page("paginas/proyecciones.py", title="Proyecciones", icon="📈"),
-    st.Page("paginas/presupuesto.py", title="Presupuesto", icon="💰"),
-    st.Page("paginas/arquitectura.py", title="Arquitectura y metodología", icon="🏗️"),
-])
+from app.layout import SECCIONES  # noqa: E402
+
+pagina = st.navigation({
+    seccion: [st.Page(archivo, title=titulo, icon=icono, default=(pid == "resumen"))
+              for pid, archivo, titulo, icono in paginas]
+    for seccion, paginas in SECCIONES.items()
+})
 pagina.run()

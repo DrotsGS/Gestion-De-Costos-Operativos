@@ -52,7 +52,7 @@ Flujo de la solución:
 2. **Relación** (`src/relacion.py`): regresión restringida + OLS, VIF, cointegración, pesos móviles y desfases.
 3. **Pronóstico** (`src/pronostico.py`): comparar 4 modelos con backtest de origen móvil, simular 5.000 trayectorias y validar la cobertura de los rangos.
 4. **Negocio** (`src/negocio.py`): presupuesto P50 + reserva y verificador de cotizaciones.
-5. **Presentación** (`app/`): app Streamlit de 6 páginas con el agente en un panel lateral.
+5. **Presentación** (`app/`): app Streamlit de 7 páginas en dos secciones (para el cliente y detrás del análisis) con el agente en un panel lateral.
 
 ## Resultados del análisis de los datos y los modelos
 
@@ -75,8 +75,8 @@ Ojo con la lectura: los pesos multiplican **precios**, y Z (≈ 2.133) cuesta mu
 
 | Parte del costo explicada por | X | Y | Z |
 |---|---|---|---|
-| Equipo 1 | 4 % | **96 %** | 0 % |
-| Equipo 2 | 3 % | 20 % | **77 %** |
+| Equipo 1 | 3,5 % | **96,5 %** | 0 % |
+| Equipo 2 | 2,8 % | 19,7 % | **77,5 %** |
 
 Lectura de negocio:
 
@@ -207,10 +207,10 @@ Al extraer el texto del PDF del enunciado aparece, debajo de "Código funcional"
 |---|---|---|
 | Equipo 1 | 95 % Z | Pesos 0,80 Y + 0,20 X; Z ≈ 0 (p-valor 0,88) |
 | Equipo 2 | 70 % X + 30 % Z | Pesos ≈ ⅓ cada una; X explica solo ≈ 3 % del costo |
-| Materia prima Y | No significativa, descartar | Es la de mayor peso en el Equipo 1 (0,80; ≈ 96 % de su costo) y pesa ⅓ en el Equipo 2 |
+| Materia prima Y | No significativa, descartar | Es la de mayor peso en el Equipo 1 (0,80; ≈ 96,5 % de su costo) y pesa ⅓ en el Equipo 2 |
 | Método | Solo promedio móvil de 3 meses | Es el peor de los 4 modelos a 1 mes; se usa caminata aleatoria con simulación y rangos |
 
-Las conclusiones del texto oculto no resisten los datos. Se interpretó como una posible prueba para detectar entregas generadas con IA sin revisión. **No se siguió; se documentó** como hallazgo de auditoría en la página "Calidad de datos y trampas" (tabla calculada a partir de los pesos reales, no escrita a mano).
+Las conclusiones del texto oculto no resisten los datos. Se interpretó como una posible prueba para detectar entregas generadas con IA sin revisión. **No se siguió; se documentó** como hallazgo de auditoría en la página "Datos y trampas" (tabla calculada a partir de los pesos reales, no escrita a mano).
 
 ### Investigación propia: ¿qué son X, Y y Z?
 
@@ -231,9 +231,9 @@ El modelo **no depende** de esta identificación. Se usa como contexto para el n
 
 ### Agente de IA y arquitectura
 
-- **Agente:** panel lateral en todas las páginas de la app. Usa Claude Opus 5.5 con cuatro herramientas: consultar resultados, simular escenarios, evaluar cotizaciones y búsqueda web para contexto de mercado. Toda cifra sale de las herramientas, no de la memoria del modelo. La diferencia entre la IA convencional (el modelo de pronóstico) y el agente (decide qué herramienta usar, conserva memoria de la conversación y actúa) se explica en el panel y en la página "Arquitectura y metodología". **Limitación:** no se ha probado aún con la API real; sin key, la app muestra conversaciones de ejemplo rotuladas como ilustrativas.
-- **Arquitectura AWS (diseñada, no desplegada):** ingesta mensual con EventBridge + Lambda, datos en S3 por zonas, procesamiento y reentrenamiento en ECS Fargate, app en App Runner, Claude vía Bedrock o API de Anthropic, secretos en Secrets Manager y monitoreo con CloudWatch + Budgets. Detalle en `docs/arquitectura.md`, infografía en `docs/arquitectura/infografia_aws.svg` y página "Arquitectura y metodología".
+- **Agente:** panel lateral en todas las páginas de la app. Usa Claude Opus 5.5 con cuatro herramientas: consultar resultados, simular escenarios, evaluar cotizaciones y búsqueda web para contexto de mercado. Toda cifra sale de las herramientas, no de la memoria del modelo. La diferencia entre la IA convencional (el modelo de pronóstico) y el agente (decide qué herramienta usar, conserva memoria de la conversación y actúa) se explica en el panel y en la página "Metodología". **Limitación:** no se ha probado aún con la API real; sin key, la app muestra conversaciones de ejemplo rotuladas como ilustrativas.
+- **Arquitectura AWS (diseñada, no desplegada):** ingesta mensual con EventBridge + Lambda, datos en S3 por zonas, procesamiento y reentrenamiento en ECS Fargate, app en App Runner, Claude vía Bedrock o API de Anthropic, secretos en Secrets Manager y monitoreo con CloudWatch + Budgets. Detalle en `docs/arquitectura.md`, infografía en `docs/arquitectura/infografia_aws.svg`.
 
 ### Comentario final
 
-El resultado más útil para la constructora no es un número sino una forma de trabajar: **presupuestar el Equipo 1 mirando Y (probable acero) y el Equipo 2 mirando Z (probable aluminio)**, comprometer cifras solo a 3 meses, reservar contingencia por encima del P50 y revisar cada mes. Las decisiones y descartes del proceso están en `docs/DECISIONES.md`.
+El resultado más útil para la constructora no es un número sino una forma de trabajar: **presupuestar el Equipo 1 mirando Y (probable acero) y el Equipo 2 mirando Z (probable aluminio)**, comprometer cifras solo a 3 meses, reservar contingencia por encima del P50 y actualizar el pronóstico cada trimestre (el horizonte confiable es de 3 meses; el pipeline de datos puede refrescarse cada mes). Las decisiones y descartes del proceso están en `docs/DECISIONES.md`.

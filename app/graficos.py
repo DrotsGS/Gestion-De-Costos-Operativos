@@ -30,10 +30,10 @@ def fig_serie_con_atipico(cruda: pd.Series, limpia: pd.Series, fecha_atipico, no
     return f
 
 
-def fig_abanico(fan: pd.DataFrame, horizonte: int, titulo: str, cobertura: float, nombre: str = "Costo",
+def fig_abanico(fan: pd.DataFrame, horizonte: int, titulo: str, cobertura: float | None = None, nombre: str = "Costo",
                 tema: str = "light") -> go.Figure:
     """Abanico P10–P90 y P25–P75 con mediana. Tras el horizonte las bandas se atenúan (referencial).
-    `cobertura` = cobertura empírica del P10–P90 (se muestra en la leyenda)."""
+    `cobertura` = cobertura empírica del P10–P90 (se muestra en la leyenda); sin ella, leyenda de negocio."""
     t = tokens(tema)
     x = fan.index
     n = len(fan)
@@ -52,7 +52,9 @@ def fig_abanico(fan: pd.DataFrame, horizonte: int, titulo: str, cobertura: float
                           fillcolor=_rgba(color, op), name=nom, showlegend=leg, legendgroup=nom,
                           hoverinfo="skip")
 
-    banda("p10", "p90", t["banda_80"], f"P10–P90 (cobertura empírica ≈ {fmt_pct(cobertura, 0)})")
+    rango = ("Rango probable (P10–P90)" if cobertura is None
+             else f"P10–P90 (cobertura empírica ≈ {fmt_pct(cobertura, 0)})")
+    banda("p10", "p90", t["banda_80"], rango)
     banda("p25", "p75", t["banda_50"], "P25–P75")
     f.add_scatter(x=x[:k], y=fan["p50"].iloc[:k], mode="lines", line=dict(color=t["p50"], width=2),
                   name=f"{nombre} P50", hoverinfo="skip")

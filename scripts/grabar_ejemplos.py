@@ -12,6 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import anthropic  # noqa: E402
 
+from app.layout import PAGINAS  # noqa: E402
 from src.agente.agente import responder  # noqa: E402
 from src.pipeline import build_results  # noqa: E402
 
@@ -31,7 +32,7 @@ def main() -> None:
     res = build_results()
     ejemplos = []
     for pagina, pregunta in PREGUNTAS:
-        r = responder([{"role": "user", "content": pregunta}], pagina, res, client)
+        r = responder([{"role": "user", "content": pregunta}], PAGINAS[pagina], res, client)
         print(f"- {pregunta}\n  herramientas: {r.herramientas_usadas}  error: {r.error}")
         if r.error:
             sys.exit(f"Falló la pregunta: {r.texto}")

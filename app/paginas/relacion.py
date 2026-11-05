@@ -1,4 +1,4 @@
-"""Página 3: Qué mueve el precio."""
+"""Página: Qué mueve el precio (sección análisis)."""
 import pandas as pd
 import streamlit as st
 
